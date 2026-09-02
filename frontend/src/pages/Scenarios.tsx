@@ -1,9 +1,9 @@
+import ScenarioSimulator from "../components/scenario/ScenarioSimulator";
+
 function Scenarios() {
   return (
-    <div>
-      <h1>Scenarios</h1>
-    </div>
-  )
+    <ScenarioSimulator />
+  );
 }
 
-export default Scenarios
+export default Scenarios;

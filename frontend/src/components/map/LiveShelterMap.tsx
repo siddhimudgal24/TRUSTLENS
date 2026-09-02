@@ -14,21 +14,27 @@ import MapLayersPanel from "./MapLayersPanel";
 import ShelterDetailPanel from "../shelter/ShelterDetailPanel";
 
 import {
-  shelters,
   floodZone,
   affectedZones,
   roads,
   blockedRoads,
 } from "../../data/mockData";
 
-import type { Shelter } from "../../data/mockData";
+import { useShelterStore } from "../../store/shelterStore";
 
 function LiveShelterMap() {
-  // Currently selected shelter
-  const [selectedShelter, setSelectedShelter] =
-    useState<Shelter | null>(null);
+  const shelters = useShelterStore(
+    (state) => state.shelters
+  );
 
-  // Map layer visibility
+  const selectedShelter = useShelterStore(
+    (state) => state.selectedShelter
+  );
+
+  const selectShelter = useShelterStore(
+    (state) => state.selectShelter
+  );
+
   const [layers, setLayers] = useState({
     shelters: true,
     flood: true,
@@ -37,7 +43,6 @@ function LiveShelterMap() {
     blockedRoads: true,
   });
 
-  // Toggle a map layer
   const toggleLayer = (
     layer: keyof typeof layers
   ) => {
@@ -47,7 +52,6 @@ function LiveShelterMap() {
     }));
   };
 
-  // Map center
   const center: [number, number] = [
     26.9124,
     75.7873,
@@ -61,11 +65,11 @@ function LiveShelterMap() {
         scrollWheelZoom={true}
         className="w-full h-full rounded-xl"
       >
-
         <TileLayer
           attribution="&copy; OpenStreetMap contributors"
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+
         {layers.flood && (
           <Polygon
             positions={floodZone}
@@ -78,13 +82,12 @@ function LiveShelterMap() {
           >
             <Popup>
               <strong>Flood Zone</strong>
-
               <br />
-
               Simulated high-risk flood area
             </Popup>
           </Polygon>
         )}
+
         {layers.roads &&
           roads.map((road, index) => (
             <Polyline
@@ -97,6 +100,7 @@ function LiveShelterMap() {
               }}
             />
           ))}
+
         {layers.blockedRoads &&
           blockedRoads.map((road, index) => (
             <Polyline
@@ -109,14 +113,12 @@ function LiveShelterMap() {
               }}
             />
           ))}
+
         {layers.affected &&
           affectedZones.map((zone) => (
             <Circle
               key={zone.id}
-              center={[
-                zone.lat,
-                zone.lng,
-              ]}
+              center={[zone.lat, zone.lng]}
               radius={500}
               pathOptions={{
                 color: "orange",
@@ -126,39 +128,35 @@ function LiveShelterMap() {
               }}
             >
               <Popup>
-                <strong>
-                  {zone.name}
-                </strong>
-
+                <strong>{zone.name}</strong>
                 <br />
-
                 Affected population:{" "}
-
                 <strong>
                   {zone.population.toLocaleString()}
                 </strong>
               </Popup>
             </Circle>
           ))}
+
         {layers.shelters &&
           shelters.map((shelter) => (
             <ShelterMarker
               key={shelter.id}
               shelter={shelter}
-              onSelect={setSelectedShelter}
+              onSelect={selectShelter}
             />
           ))}
-
       </MapContainer>
+
       <MapLayersPanel
         layers={layers}
         onToggle={toggleLayer}
       />
+
       <ShelterDetailPanel
         shelter={selectedShelter}
-        onClose={() => setSelectedShelter(null)}
+        onClose={() => selectShelter(null)}
       />
-
     </div>
   );
 }

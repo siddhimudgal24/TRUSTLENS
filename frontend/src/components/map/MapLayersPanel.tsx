@@ -8,7 +8,9 @@ interface MapLayers {
 
 interface MapLayersPanelProps {
   layers: MapLayers;
-  onToggle: (layer: keyof MapLayers) => void;
+  onToggle: (
+    layer: keyof MapLayers
+  ) => void;
 }
 
 function MapLayersPanel({
@@ -39,8 +41,7 @@ function MapLayersPanel({
   ];
 
   return (
-    <div className="absolute top-4 left-4 z-1000 w-60 bg-[#0B1220]/95 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl text-white">
-
+    <div className="absolute top-4 left-4 z-[1000] w-60 bg-[#0B1220]/95 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl text-white">
       <div className="px-4 py-3 border-b border-white/10">
         <h3 className="text-sm font-semibold">
           MAP LAYERS
@@ -52,13 +53,11 @@ function MapLayersPanel({
       </div>
 
       <div className="p-3 space-y-1">
-
         {layerItems.map((item) => (
           <label
             key={item.key}
             className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-white/5 cursor-pointer transition"
           >
-
             <span className="text-sm text-gray-300">
               {item.label}
             </span>
@@ -66,15 +65,14 @@ function MapLayersPanel({
             <input
               type="checkbox"
               checked={layers[item.key]}
-              onChange={() => onToggle(item.key)}
+              onChange={() =>
+                onToggle(item.key)
+              }
               className="w-4 h-4 accent-green-500 cursor-pointer"
             />
-
           </label>
         ))}
-
       </div>
-
     </div>
   );
 }

@@ -17,50 +17,17 @@ import Analytics from "./pages/Analytics";
 function App() {
   return (
     <BrowserRouter>
-
       <MainLayout>
-
         <Routes>
-
-          <Route
-            path="/"
-            element={<Dashboard />}
-          />
-
-          <Route
-            path="/map"
-            element={<LiveMap />}
-          />
-
-          <Route
-            path="/shelters"
-            element={<Shelters />}
-          />
-
-          <Route
-            path="/inspection"
-            element={<Inspection />}
-          />
-
-          <Route
-            path="/allocation"
-            element={<Allocation />}
-          />
-
-          <Route
-            path="/scenarios"
-            element={<Scenarios />}
-          />
-
-          <Route
-            path="/analytics"
-            element={<Analytics />}
-          />
-
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/map" element={<LiveMap />} />
+          <Route path="/shelters" element={<Shelters />} />
+          <Route path="/inspection" element={<Inspection />} />
+          <Route path="/allocation" element={<Allocation />} />
+          <Route path="/scenarios" element={<Scenarios />} />
+          <Route path="/analytics" element={<Analytics />} />
         </Routes>
-
       </MainLayout>
-
     </BrowserRouter>
   );
 }

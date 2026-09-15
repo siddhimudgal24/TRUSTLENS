@@ -1,13 +1,3 @@
-import {
-  X,
-  ShieldCheck,
-  Accessibility,
-  Users,
-  Waves,
-  Zap,
-  Route,
-} from "lucide-react";
-
 import type { Shelter } from "../../data/mockData";
 
 interface ShelterDetailPanelProps {
@@ -19,138 +9,162 @@ function ShelterDetailPanel({
   shelter,
   onClose,
 }: ShelterDetailPanelProps) {
-
   if (!shelter) {
     return null;
   }
 
+  const available =
+    shelter.capacity -
+    shelter.occupied;
+
   return (
-    <div className="absolute right-4 top-4 z-1000 w-85 bg-[#0B1220]/95 backdrop-blur-md border border-white/10 rounded-xl text-white shadow-2xl">
+    <div className="fixed right-0 top-0 h-screen w-[380px] bg-[#0B1220] border-l border-white/10 z-[2000] shadow-2xl p-6 overflow-y-auto">
 
-      <div className="p-5">
+      <div className="flex items-center justify-between">
 
-        <div className="flex items-start justify-between">
+        <div>
+          <p className="text-xs text-gray-500">
+            SHELTER DETAILS
+          </p>
 
-          <div>
+          <h2 className="text-xl font-bold mt-1">
+            {shelter.name}
+          </h2>
+        </div>
 
-            <p className="text-xs text-gray-400">
-              SHELTER
+        <button
+          onClick={onClose}
+          className="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400"
+        >
+          ×
+        </button>
+
+      </div>
+
+      <div className="mt-6 bg-black/20 rounded-xl p-5 text-center">
+
+        <p className="text-gray-500 text-xs">
+          READINESS SCORE
+        </p>
+
+        <p className="text-5xl font-bold mt-2">
+          {shelter.readiness}
+        </p>
+
+        <p className="text-gray-500 text-xs mt-1">
+          out of 100
+        </p>
+
+      </div>
+
+      <div className="mt-6">
+
+        <h3 className="font-semibold">
+          Capacity
+        </h3>
+
+        <div className="grid grid-cols-2 gap-3 mt-3">
+
+          <div className="bg-black/20 rounded-lg p-4">
+            <p className="text-xs text-gray-500">
+              Total
             </p>
 
-            <h2 className="text-xl font-bold mt-1">
-              {shelter.name}
-            </h2>
-
+            <p className="text-xl font-semibold mt-1">
+              {shelter.capacity}
+            </p>
           </div>
 
-          <button
-            onClick={onClose}
-            className="p-2 rounded-lg hover:bg-white/10"
-          >
-            <X size={18} />
-          </button>
+          <div className="bg-black/20 rounded-lg p-4">
+            <p className="text-xs text-gray-500">
+              Available
+            </p>
+
+            <p className="text-xl font-semibold mt-1">
+              {available}
+            </p>
+          </div>
 
         </div>
 
+      </div>
 
-        <div className="mt-5 flex items-center gap-4">
+      <div className="mt-6">
 
-          <div className="relative w-24 h-24">
+        <h3 className="font-semibold">
+          Readiness Breakdown
+        </h3>
 
-            <div className="w-24 h-24 rounded-full border-8 border-green-500/20 flex items-center justify-center">
-
-              <span className="text-2xl font-bold">
-                {shelter.readiness}
-              </span>
-
-            </div>
-
-          </div>
-
-          <div>
-
-            <p className="text-sm text-gray-400">
-              Readiness Score
-            </p>
-
-            <p className="text-green-400 font-semibold mt-1">
-              {shelter.status.toUpperCase()}
-            </p>
-
-          </div>
-
-        </div>
-
-
-        <div className="mt-6 space-y-4">
+        <div className="mt-3 space-y-3">
 
           <ScoreRow
-            icon={<ShieldCheck size={17} />}
             label="Safety"
             value={shelter.safety}
           />
 
           <ScoreRow
-            icon={<Accessibility size={17} />}
             label="Accessibility"
-            value={shelter.accessibility}
-          />
-
-          <ScoreRow
-            icon={<Users size={17} />}
-            label="Capacity"
             value={
-              Math.round(
-                ((shelter.capacity -
-                  shelter.occupied) /
-                  shelter.capacity) *
-                  100
-              )
+              shelter.accessibility
             }
           />
 
           <ScoreRow
-            icon={<Waves size={17} />}
+            label="Capacity"
+            value={shelter.capacity > 0
+              ? Math.round(
+                  available /
+                    shelter.capacity *
+                    100
+                )
+              : 0}
+          />
+
+          <ScoreRow
             label="Hazard Exposure"
-            value={shelter.hazardExposure}
+            value={
+              shelter.hazardExposure
+            }
           />
 
           <ScoreRow
-            icon={<Zap size={17} />}
             label="Essential Services"
-            value={shelter.essentialServices}
+            value={
+              shelter.essentialServices
+            }
           />
 
           <ScoreRow
-            icon={<Route size={17} />}
             label="Road Access"
-            value={shelter.roadAccess}
+            value={
+              shelter.roadAccess
+            }
           />
 
         </div>
 
+      </div>
 
-        <div className="mt-6 p-4 rounded-lg bg-white/5">
+      <div className="mt-6">
 
-          <p className="text-xs text-gray-400">
-            AVAILABLE CAPACITY
-          </p>
+        <h3 className="font-semibold">
+          Recommendation
+        </h3>
 
-          <p className="text-2xl font-bold mt-1">
-            {shelter.capacity -
-              shelter.occupied}
-          </p>
+        <div className="mt-3 bg-white/5 rounded-lg p-4 text-sm text-gray-300">
 
-          <p className="text-xs text-gray-500 mt-1">
-            of {shelter.capacity} total spaces
-          </p>
+          {shelter.status ===
+          "recommended"
+            ? "This shelter is suitable for allocation under current conditions."
+            : shelter.status ===
+              "conditional"
+            ? "This shelter can be used with caution. Monitor its readiness and accessibility."
+            : shelter.status ===
+              "avoid"
+            ? "Avoid allocating new demand to this shelter."
+            : "This shelter is currently unavailable."}
 
         </div>
-
-
-        <button className="w-full mt-5 py-3 rounded-lg bg-white text-black font-semibold hover:bg-gray-200 transition">
-          View Full Shelter Details
-        </button>
 
       </div>
 
@@ -158,39 +172,37 @@ function ShelterDetailPanel({
   );
 }
 
-interface ScoreRowProps {
-  icon: React.ReactNode;
-  label: string;
-  value: number;
-}
-
 function ScoreRow({
-  icon,
   label,
   value,
-}: ScoreRowProps) {
+}: {
+  label: string;
+  value: number;
+}) {
   return (
     <div>
 
-      <div className="flex justify-between items-center text-sm">
+      <div className="flex justify-between text-xs mb-1">
 
-        <div className="flex items-center gap-2 text-gray-300">
-          {icon}
+        <span className="text-gray-400">
           {label}
-        </div>
+        </span>
 
-        <span className="font-semibold">
-          {value}
+        <span>
+          {value}/100
         </span>
 
       </div>
 
-      <div className="h-1.5 bg-white/10 rounded-full mt-2 overflow-hidden">
+      <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
 
         <div
-          className="h-full bg-green-500 rounded-full"
+          className="h-full bg-green-500"
           style={{
-            width: `${value}%`,
+            width: `${Math.max(
+              0,
+              Math.min(100, value)
+            )}%`,
           }}
         />
 

@@ -54,7 +54,7 @@ function Sidebar() {
       
       <div className="mb-10">
         <h1 className="text-2xl font-bold tracking-wide">
-          SHELTERX
+          TRUSTLENS 
         </h1>
 
         <p className="text-xs text-gray-400 mt-1">

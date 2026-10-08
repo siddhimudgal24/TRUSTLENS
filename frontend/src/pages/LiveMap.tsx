@@ -1,23 +1,21 @@
 import LiveShelterMap from "../components/map/LiveShelterMap";
+import PageHeader from "../components/layout/PageHeader";
 
 function LiveMap() {
   return (
-    <div className="h-[calc(100vh-112px)] text-white">
+    <div className="space-y-6 text-white">
+      <PageHeader
+        eyebrow="Operations map"
+        title="Live Disaster Map"
+        description="Shelter readiness, flood exposure and road access from the available map data"
+        status={
+          <div className="rounded-full bg-blue-50 px-3 py-1 text-[10px] font-semibold text-blue-700">
+            MAP VIEW
+          </div>
+        }
+      />
 
-      <div className="mb-4">
-
-        <h1 className="text-2xl font-bold">
-          Live Disaster Map
-        </h1>
-
-        <p className="text-sm text-gray-400 mt-1">
-          Real-time shelter readiness,
-          flood exposure and road access
-        </p>
-
-      </div>
-
-      <div className="h-[calc(100%-72px)] rounded-xl overflow-hidden border border-white/10">
+      <div className="h-[min(68vh,720px)] min-h-[360px] overflow-hidden rounded-xl border border-white/10 shadow-sm shadow-black/20">
 
         <LiveShelterMap />
 

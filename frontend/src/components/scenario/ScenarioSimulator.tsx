@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PageHeader from "../layout/PageHeader";
 
 import type { ScenarioSettings } from "../../data/scenarioData";
 import { defaultScenario } from "../../data/scenarioData";
@@ -31,26 +32,20 @@ function ScenarioSimulator() {
   return (
     <div className="space-y-6 text-white">
 
-      {/* HEADER */}
+      <PageHeader
+        eyebrow="What-if analysis"
+        title="Scenario Simulator"
+        description="Explore the effect of changing disaster conditions using the local scenario model."
+      />
 
-      <div>
-        <p className="text-sm text-gray-400">
-          WHAT-IF ANALYSIS
-        </p>
-
-        <h1 className="text-2xl font-bold mt-1">
-          Scenario Simulator
-        </h1>
-
-        <p className="text-sm text-gray-400 mt-1">
-          Test disaster conditions and observe their operational impact.
-        </p>
-      </div>
+      <p className="rounded-md border border-blue-100 bg-blue-50 px-3 py-2 text-[10px] text-blue-800">
+        Scenario results are illustrative and use a local model, not live hazard or capacity feeds.
+      </p>
 
 
       {/* CONTROL PANEL */}
 
-      <div className="bg-[#111827] border border-white/10 rounded-xl p-6">
+      <div className="rounded-xl border border-white/10 bg-[#0D1320] p-4 sm:p-6">
 
         <div className="flex items-center justify-between mb-6">
 
@@ -66,7 +61,7 @@ function ScenarioSimulator() {
 
           <button
             onClick={resetScenario}
-            className="px-4 py-2 text-sm rounded-lg border border-white/10 hover:bg-white/5 transition"
+            className="rounded-lg border border-white/10 px-4 py-2 text-sm transition hover:bg-white/5"
           >
             Reset
           </button>
@@ -111,11 +106,12 @@ function ScenarioSimulator() {
 
         <div className="mt-6">
 
-          <label className="text-sm text-gray-300">
+          <label htmlFor="shelter-failure" className="text-sm text-gray-300">
             Shelter Failure
           </label>
 
           <select
+            id="shelter-failure"
             value={scenario.shelterFailure}
             onChange={(event) =>
               updateScenario(
@@ -148,7 +144,7 @@ function ScenarioSimulator() {
 
         <button
           onClick={() => setSimulated(true)}
-          className="w-full mt-7 py-3 rounded-lg bg-white text-black font-semibold hover:bg-gray-200 transition"
+          className="mt-7 w-full rounded-lg bg-cyan-500 py-3 font-semibold text-slate-950 transition hover:bg-cyan-400"
         >
           {simulated
             ? "Scenario Simulated"
@@ -182,12 +178,14 @@ function ScenarioSlider({
   value,
   onChange,
 }: ScenarioSliderProps) {
+  const inputId = label.toLowerCase().replace(/\s+/g, "-");
+
   return (
     <div className="mt-6">
 
       <div className="flex justify-between mb-2">
 
-        <label className="text-sm text-gray-300">
+        <label htmlFor={inputId} className="text-sm text-gray-300">
           {label}
         </label>
 
@@ -198,6 +196,7 @@ function ScenarioSlider({
       </div>
 
       <input
+        id={inputId}
         type="range"
         min="0"
         max="100"
@@ -249,7 +248,7 @@ function ScenarioResults({
       </h2>
 
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
 
         <ResultCard
           label="Projected Population"
@@ -269,7 +268,7 @@ function ScenarioResults({
       </div>
 
 
-      <div className="bg-[#111827] border border-white/10 rounded-xl p-5">
+      <div className="rounded-xl border border-white/10 bg-[#0D1320] p-5">
 
         <h3 className="font-semibold">
           Scenario Impact
@@ -306,7 +305,7 @@ function ScenarioResults({
       </div>
 
 
-      <div className="bg-[#111827] border border-white/10 rounded-xl p-5">
+      <div className="rounded-xl border border-white/10 bg-[#0D1320] p-5">
 
         <h3 className="font-semibold">
           Recommended Response
@@ -337,7 +336,7 @@ function ResultCard({
   value: string;
 }) {
   return (
-    <div className="bg-[#111827] border border-white/10 rounded-xl p-5">
+    <div className="rounded-xl border border-white/10 bg-[#0D1320] p-5">
 
       <p className="text-sm text-gray-400">
         {label}

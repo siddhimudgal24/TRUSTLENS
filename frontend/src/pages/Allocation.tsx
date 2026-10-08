@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useEffect } from "react";
+import PageHeader from "../components/layout/PageHeader";
 
 interface AllocationRecord {
   id: number;
@@ -15,7 +17,7 @@ function Allocation() {
   const [isRunning, setIsRunning] = useState(false);
   const [isAllocated, setIsAllocated] = useState(false);
 
-  const [records, setRecords] = useState<AllocationRecord[]>([
+  const [records] = useState<AllocationRecord[]>([
     {
       id: 1,
       zone: "Zone A — Mansarovar",
@@ -58,17 +60,24 @@ function Allocation() {
     },
   ]);
 
-  const runAllocation = () => {
-    setIsRunning(true);
-    setIsAllocated(false);
+  useEffect(() => {
+    if (!isRunning) return;
 
-    setTimeout(() => {
+    const timeoutId = window.setTimeout(() => {
       setIsRunning(false);
       setIsAllocated(true);
     }, 2000);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [isRunning]);
+
+  const runAllocation = () => {
+    setIsRunning(true);
+    setIsAllocated(false);
   };
 
   const resetAllocation = () => {
+    setIsRunning(false);
     setIsAllocated(false);
   };
 
@@ -88,43 +97,32 @@ function Allocation() {
       : 0;
 
   return (
-    <div className="min-h-screen bg-[#070B14] text-white p-6">
-
-      {/* HEADER */}
-
-      <div className="flex items-center justify-between mb-8">
-
-        <div>
-          <p className="text-xs uppercase tracking-[0.25em] text-cyan-400 mb-2">
-            SHELTERX / EMERGENCY ALLOCATION ENGINE
-          </p>
-
-          <h1 className="text-3xl font-bold">
-            Smart Allocation
-          </h1>
-
-          <p className="text-sm text-gray-400 mt-2">
-            Intelligently assign affected populations to the safest
-            available shelters.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2 border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 rounded-lg">
+    <div className="space-y-6 text-white">
+      <PageHeader
+        eyebrow="Emergency allocation engine"
+        title="Smart Allocation"
+        description="Review sample assignments and run the local allocation demonstration."
+        status={
+          <div className="flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-2">
 
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
 
           <span className="text-xs font-semibold text-emerald-400">
-            ALLOCATION ENGINE ONLINE
+            LOCAL DEMO
           </span>
 
-        </div>
+          </div>
+        }
+      />
 
-      </div>
+      <p className="rounded-md border border-blue-100 bg-blue-50 px-3 py-2 text-[10px] text-blue-800">
+        Allocation records are sample data. This demonstration does not contact a live allocation service.
+      </p>
 
 
       {/* KPI CARDS */}
 
-      <div className="grid grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
 
         <div className="bg-[#0D1320] border border-white/10 rounded-xl p-5">
 
@@ -198,9 +196,9 @@ function Allocation() {
 
       {/* CONTROL BAR */}
 
-      <div className="bg-[#0D1320] border border-white/10 rounded-xl p-5 mb-6">
+      <div className="rounded-xl border border-white/10 bg-[#0D1320] p-4 sm:p-5">
 
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 
           <div>
 
@@ -215,7 +213,7 @@ function Allocation() {
           </div>
 
 
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
 
             <button
               onClick={resetAllocation}
@@ -242,7 +240,7 @@ function Allocation() {
 
         {/* ALGORITHM FACTORS */}
 
-        <div className="grid grid-cols-6 gap-3 mt-5">
+        <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
 
           <div className="bg-[#070B14] rounded-lg p-3">
             <p className="text-[10px] text-gray-500">
@@ -305,12 +303,12 @@ function Allocation() {
 
       {/* MAIN CONTENT */}
 
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 2xl:grid-cols-3">
 
 
         {/* ALLOCATION TABLE */}
 
-        <div className="col-span-2 bg-[#0D1320] border border-white/10 rounded-xl p-6">
+        <div className="min-w-0 rounded-xl border border-white/10 bg-[#0D1320] p-4 sm:p-6 2xl:col-span-2">
 
           <div className="flex items-center justify-between mb-5">
 
@@ -335,11 +333,11 @@ function Allocation() {
           </div>
 
 
-          <div className="overflow-hidden rounded-xl border border-white/10">
+          <div className="overflow-x-auto rounded-xl border border-white/10">
 
             {/* TABLE HEADER */}
 
-            <div className="grid grid-cols-7 gap-3 px-4 py-3 bg-[#070B14] text-[10px] text-gray-500 uppercase">
+            <div className="grid min-w-[820px] grid-cols-7 gap-3 bg-[#070B14] px-4 py-3 text-[10px] uppercase text-gray-500">
 
               <span>Zone</span>
               <span>Population</span>
@@ -358,7 +356,7 @@ function Allocation() {
 
               <div
                 key={record.id}
-                className="grid grid-cols-7 gap-3 px-4 py-4 border-t border-white/5 items-center hover:bg-white/[0.02]"
+                className="grid min-w-[820px] grid-cols-7 items-center gap-3 border-t border-white/5 px-4 py-4 hover:bg-white/[0.02]"
               >
 
                 <div>
@@ -459,7 +457,7 @@ function Allocation() {
 
           {/* ALGORITHM STATUS */}
 
-          <div className="bg-[#0D1320] border border-white/10 rounded-xl p-6">
+          <div className="rounded-xl border border-white/10 bg-[#0D1320] p-4 sm:p-6">
 
             <p className="text-xs text-gray-500 uppercase">
               Optimization Engine
@@ -564,7 +562,7 @@ function Allocation() {
 
           {/* SYSTEM RESULT */}
 
-          <div className="bg-[#0D1320] border border-white/10 rounded-xl p-6">
+          <div className="rounded-xl border border-white/10 bg-[#0D1320] p-4 sm:p-6">
 
             <p className="text-xs text-gray-500 uppercase">
               System Recommendation
@@ -636,9 +634,9 @@ function Allocation() {
 
       {/* EVACUATION FLOW */}
 
-      <div className="bg-[#0D1320] border border-white/10 rounded-xl p-6 mt-6">
+      <div className="rounded-xl border border-white/10 bg-[#0D1320] p-4 sm:p-6">
 
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 
           <div>
 
@@ -659,7 +657,7 @@ function Allocation() {
         </div>
 
 
-        <div className="grid grid-cols-4 gap-4 mt-6">
+        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 2xl:grid-cols-4">
 
 
           <div className="bg-[#070B14] border border-white/5 rounded-xl p-5">

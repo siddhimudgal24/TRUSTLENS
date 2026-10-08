@@ -14,6 +14,7 @@ import {
 } from "recharts";
 
 import { shelters } from "../../data/mockData";
+import PageHeader from "../layout/PageHeader";
 
 
 const readinessData = shelters.map((shelter) => ({
@@ -110,32 +111,24 @@ function AnalyticsDashboard() {
   const capacityUtilization = Math.round(
     (totalOccupied / totalCapacity) * 100
   );
+  const sheltersNeedingReview = shelters.filter(
+    (shelter) => shelter.status !== "recommended"
+  ).length;
+  const availablePlaces = totalCapacity - totalOccupied;
 
   return (
     <div className="space-y-6 text-white">
 
-      {/* HEADER */}
-
-      <div>
-
-        <p className="text-sm text-gray-400">
-          SYSTEM PERFORMANCE
-        </p>
-
-        <h1 className="text-2xl font-bold mt-1">
-          Analytics & Insights
-        </h1>
-
-        <p className="text-sm text-gray-400 mt-1">
-          Operational performance and shelter intelligence.
-        </p>
-
-      </div>
+      <PageHeader
+        eyebrow="System performance"
+        title="Analytics & Insights"
+        description="Operational performance and shelter intelligence."
+      />
 
 
       {/* KPI CARDS */}
 
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
 
         <MetricCard
           title="Average Readiness"
@@ -148,13 +141,13 @@ function AnalyticsDashboard() {
         />
 
         <MetricCard
-          title="Demand Coverage"
-          value="92%"
+          title="Shelters Needing Review"
+          value={sheltersNeedingReview.toString()}
         />
 
         <MetricCard
-          title="Capacity Violations"
-          value="0"
+          title="Places Available"
+          value={availablePlaces.toLocaleString()}
         />
 
       </div>
@@ -162,7 +155,7 @@ function AnalyticsDashboard() {
 
       {/* READINESS CHART */}
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
 
         <ChartCard title="Shelter Readiness">
 
@@ -339,7 +332,7 @@ function AnalyticsDashboard() {
 
       {/* INSIGHTS */}
 
-      <div className="bg-[#111827] border border-white/10 rounded-xl p-6">
+      <div className="rounded-xl border border-white/10 bg-[#0D1320] p-4 sm:p-6">
 
         <h2 className="font-semibold">
           Operational Insights
@@ -383,7 +376,7 @@ function MetricCard({
   value: string;
 }) {
   return (
-    <div className="bg-[#111827] border border-white/10 rounded-xl p-5">
+    <div className="rounded-xl border border-white/10 bg-[#0D1320] p-5">
 
       <p className="text-sm text-gray-400">
         {title}
@@ -406,7 +399,7 @@ function ChartCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-[#111827] border border-white/10 rounded-xl p-5">
+    <div className="rounded-xl border border-white/10 bg-[#0D1320] p-5">
 
       <h2 className="font-semibold mb-4">
         {title}

@@ -41,24 +41,24 @@ function MapLayersPanel({
   ];
 
   return (
-    <div className="absolute top-4 left-4 z-[1000] w-60 bg-[#0B1220]/95 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl text-white">
-      <div className="px-4 py-3 border-b border-white/10">
-        <h3 className="text-sm font-semibold">
+    <div className="map-layers-panel absolute right-3 top-3 z-[1000] w-[min(10.5rem,calc(100%-1.5rem))] rounded-xl border border-white/10 bg-[#0B1220]/95 text-white shadow-2xl backdrop-blur-md sm:right-4 sm:top-4">
+      <div className="border-b border-white/10 px-3 py-2">
+        <h3 className="text-[10px] font-semibold">
           MAP LAYERS
         </h3>
 
-        <p className="text-xs text-gray-400 mt-1">
+        <p className="mt-0.5 text-[9px] text-gray-400">
           Control map visibility
         </p>
       </div>
 
-      <div className="p-3 space-y-1">
+      <div className="space-y-0.5 p-1.5">
         {layerItems.map((item) => (
           <label
             key={item.key}
-            className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-white/5 cursor-pointer transition"
+            className="flex cursor-pointer items-center justify-between rounded px-2 py-1.5 transition hover:bg-white/5"
           >
-            <span className="text-sm text-gray-300">
+            <span className="text-[9px] text-gray-300">
               {item.label}
             </span>
 
@@ -68,7 +68,7 @@ function MapLayersPanel({
               onChange={() =>
                 onToggle(item.key)
               }
-              className="w-4 h-4 accent-green-500 cursor-pointer"
+              className="h-3 w-3 cursor-pointer accent-blue-600"
             />
           </label>
         ))}

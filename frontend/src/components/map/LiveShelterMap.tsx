@@ -74,10 +74,10 @@ function LiveShelterMap() {
           <Polygon
             positions={floodZone}
             pathOptions={{
-              color: "red",
-              fillColor: "red",
-              fillOpacity: 0.35,
-              weight: 4,
+              color: "#4b9de8",
+              fillColor: "#63b4f2",
+              fillOpacity: 0.24,
+              weight: 2,
             }}
           >
             <Popup>
@@ -94,9 +94,9 @@ function LiveShelterMap() {
               key={`road-${index}`}
               positions={road}
               pathOptions={{
-                color: "blue",
-                weight: 6,
-                opacity: 0.8,
+                color: "#f5ad36",
+                weight: 4,
+                opacity: 0.9,
               }}
             />
           ))}
@@ -107,8 +107,9 @@ function LiveShelterMap() {
               key={`blocked-road-${index}`}
               positions={road}
               pathOptions={{
-                color: "red",
-                weight: 10,
+                color: "#e94d4d",
+                weight: 6,
+                opacity: 0.95,
                 dashArray: "10 10",
               }}
             />
@@ -121,10 +122,10 @@ function LiveShelterMap() {
               center={[zone.lat, zone.lng]}
               radius={500}
               pathOptions={{
-                color: "orange",
-                fillColor: "orange",
-                fillOpacity: 0.35,
-                weight: 3,
+                color: "#7c58ef",
+                fillColor: "#795cf1",
+                fillOpacity: 0.22,
+                weight: 2,
               }}
             >
               <Popup>

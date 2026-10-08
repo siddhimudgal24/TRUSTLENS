@@ -1,6 +1,6 @@
-# SHELTERX
+# TRUSTLENS
 
-SHELTERX is a frontend demonstration of emergency shelter readiness, map
+TRUSTLENS is a frontend demonstration of emergency shelter readiness, map
 visualization, inspection workflow, scenario modeling, and allocation planning.
 It is intended to support a future emergency-operations product; it is not an
 operational dispatch or safety-certification system.

@@ -550,7 +550,7 @@ function Shelters() {
             <div className="mt-4 rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-4">
 
               <p className="text-xs font-semibold text-cyan-400">
-                SHELTERX DECISION SUPPORT
+                TRUSTLENS DECISION SUPPORT
               </p>
 
               <p className="text-xs text-gray-400 mt-2 leading-5">

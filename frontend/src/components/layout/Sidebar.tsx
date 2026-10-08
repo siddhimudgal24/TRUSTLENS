@@ -29,7 +29,7 @@ function Sidebar() {
       <div className="sidebar-brand flex items-center gap-2 px-4 py-4">
         <Activity className="shrink-0 text-blue-300" size={27} strokeWidth={2.7} />
         <div className="min-w-0">
-          <h1 className="text-lg font-bold leading-5 tracking-wide">SHELTERX</h1>
+          <h1 className="text-lg font-bold leading-5 tracking-wide">TRUSTLENS</h1>
           <p className="mt-0.5 max-w-[118px] text-[7px] leading-[9px] text-slate-300">
             Safer communities. Stronger tomorrow.
           </p>

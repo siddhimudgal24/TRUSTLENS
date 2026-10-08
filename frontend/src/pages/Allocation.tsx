@@ -754,7 +754,7 @@ function Allocation() {
       <div className="mt-6 border border-cyan-500/10 bg-cyan-500/5 rounded-xl p-4">
 
         <p className="text-[10px] text-cyan-400 font-semibold uppercase">
-          SHELTERX DECISION SUPPORT
+          TRUSTLENS DECISION SUPPORT
         </p>
 
         <p className="text-[10px] text-gray-500 mt-2 leading-5">

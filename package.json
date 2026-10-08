@@ -1,0 +1,9 @@
+{
+  "name": "trustlens-root",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "backend": "start-backend.bat",
+    "frontend": "cd frontend && npm run dev"
+  }
+}

@@ -21,8 +21,8 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 
 function App() {
   return (
-    <BrowserRouter>
-      <AppErrorBoundary>
+    <AppErrorBoundary>
+      <BrowserRouter>
         <MainLayout>
           <Suspense
             fallback={
@@ -49,8 +49,8 @@ function App() {
             </Routes>
           </Suspense>
         </MainLayout>
-      </AppErrorBoundary>
-    </BrowserRouter>
+      </BrowserRouter>
+    </AppErrorBoundary>
   );
 }
 

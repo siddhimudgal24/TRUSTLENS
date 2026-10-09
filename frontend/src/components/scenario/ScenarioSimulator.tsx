@@ -218,6 +218,17 @@ function ScenarioResults({
   scenario: ScenarioSettings;
 }) {
   const basePopulation = 8420;
+  const failedShelter = shelters.find(
+    (shelter) => shelter.id === scenario.shelterFailure
+  );
+  const totalCapacity = shelters.reduce(
+    (total, shelter) => total + shelter.capacity,
+    0
+  );
+  const failedCapacityShare =
+    failedShelter && totalCapacity > 0
+      ? (failedShelter.capacity / totalCapacity) * 100
+      : 0;
 
   const affectedPopulation = Math.round(
     basePopulation *
@@ -229,16 +240,20 @@ function ScenarioResults({
     94 -
       scenario.floodSeverity * 0.25 -
       scenario.roadClosures * 0.2 -
-      scenario.populationDemand * 0.15
+      scenario.populationDemand * 0.15 -
+      failedCapacityShare
   );
 
-  const operationalRisk =
+  const operationalRisk = Math.min(
+    100,
     Math.round(
       (scenario.floodSeverity +
         scenario.roadClosures +
         scenario.populationDemand) /
-        3
-    );
+        3 +
+        failedCapacityShare
+    )
+  );
 
   return (
     <div className="space-y-4">
@@ -294,9 +309,7 @@ function ScenarioResults({
           <ImpactRow
             label="Shelter Failure"
             value={
-              scenario.shelterFailure === "none"
-                ? "None"
-                : scenario.shelterFailure
+              failedShelter?.name ?? "None"
             }
           />
 

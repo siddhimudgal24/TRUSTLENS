@@ -41,7 +41,7 @@ function Topbar() {
         label: zone.name,
         detail: `${zone.id} · Affected area`,
         shelter: null,
-        path: "/map",
+        path: `/map?zone=${encodeURIComponent(zone.id)}`,
       }));
 
     return [
@@ -63,7 +63,7 @@ function Topbar() {
   };
 
   return (
-    <header className="app-topbar flex min-h-[60px] items-center gap-3 border-b px-4 py-2 sm:px-5 lg:px-6">
+    <header className="app-topbar flex min-h-[60px] items-center gap-2 border-b px-3 py-2 sm:gap-3 sm:px-4 lg:px-2.5">
       <form
         role="search"
         onSubmit={handleSearchSubmit}

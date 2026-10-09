@@ -33,17 +33,27 @@ export const useShelterStore =
       }),
 
     updateShelter: (id, updates) =>
-      set((state) => ({
-        shelters: state.shelters.map(
-          (shelter) =>
-            shelter.id === id
+      set((state) => {
+        const shelters = state.shelters.map((shelter) =>
+          shelter.id === id
+            ? {
+                ...shelter,
+                ...updates,
+              }
+            : shelter
+        );
+
+        return {
+          shelters,
+          selectedShelter:
+            state.selectedShelter?.id === id
               ? {
-                  ...shelter,
+                  ...state.selectedShelter,
                   ...updates,
                 }
-              : shelter
-        ),
-      })),
+              : state.selectedShelter,
+        };
+      }),
 
     resetShelters: () =>
       set({

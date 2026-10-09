@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   MapContainer,
@@ -7,6 +7,7 @@ import {
   Polyline,
   Circle,
   Popup,
+  useMap,
 } from "react-leaflet";
 
 import ShelterMarker from "./ShelterMarker";
@@ -22,7 +23,9 @@ import {
 
 import { useShelterStore } from "../../store/shelterStore";
 
-function LiveShelterMap() {
+type MapPosition = [number, number];
+
+function LiveShelterMap({ focus }: { focus?: MapPosition }) {
   const shelters = useShelterStore(
     (state) => state.shelters
   );
@@ -60,11 +63,13 @@ function LiveShelterMap() {
   return (
     <div className="relative w-full h-full">
       <MapContainer
-        center={center}
-        zoom={13}
+        center={focus ?? center}
+        zoom={focus ? 14 : 13}
         scrollWheelZoom={true}
         className="w-full h-full rounded-xl"
       >
+        {focus && <MapFocus position={focus} />}
+
         <TileLayer
           attribution="&copy; OpenStreetMap contributors"
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -160,6 +165,16 @@ function LiveShelterMap() {
       />
     </div>
   );
+}
+
+function MapFocus({ position }: { position: MapPosition }) {
+  const map = useMap();
+
+  useEffect(() => {
+    map.flyTo(position, 14);
+  }, [map, position]);
+
+  return null;
 }
 
 export default LiveShelterMap;

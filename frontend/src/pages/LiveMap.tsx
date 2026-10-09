@@ -1,7 +1,17 @@
+import { useSearchParams } from "react-router-dom";
+import { affectedZones } from "../data/mockData";
 import LiveShelterMap from "../components/map/LiveShelterMap";
 import PageHeader from "../components/layout/PageHeader";
 
 function LiveMap() {
+  const [searchParams] = useSearchParams();
+  const selectedZone = affectedZones.find(
+    (zone) => zone.id === searchParams.get("zone")
+  );
+  const focus: [number, number] | undefined = selectedZone
+    ? [selectedZone.lat, selectedZone.lng]
+    : undefined;
+
   return (
     <div className="space-y-6 text-white">
       <PageHeader
@@ -17,7 +27,7 @@ function LiveMap() {
 
       <div className="h-[min(68vh,720px)] min-h-[360px] overflow-hidden rounded-xl border border-white/10 shadow-sm shadow-black/20">
 
-        <LiveShelterMap />
+        <LiveShelterMap focus={focus} />
 
       </div>
 

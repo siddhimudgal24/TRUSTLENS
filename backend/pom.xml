@@ -62,6 +62,13 @@
             <version>1.6.2</version>
         </dependency>
 
+        <!-- Java Activation Framework (Required for JavaMail on Java 9/17/21) -->
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+
         <!-- GSON for JSON handling in API Servlets -->
         <dependency>
             <groupId>com.google.code.gson</groupId>

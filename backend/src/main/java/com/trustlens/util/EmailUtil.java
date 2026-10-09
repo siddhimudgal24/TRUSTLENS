@@ -7,7 +7,6 @@ import java.util.Properties;
 
 public class EmailUtil {
 
-    // Configure your SMTP credentials via Environment Variables or defaults
     private static final String SMTP_HOST = System.getenv("SMTP_HOST") != null ? System.getenv("SMTP_HOST") : "smtp.gmail.com";
     private static final String SMTP_PORT = System.getenv("SMTP_PORT") != null ? System.getenv("SMTP_PORT") : "587";
     private static final String SMTP_USER = System.getenv("SMTP_USER") != null ? System.getenv("SMTP_USER") : "shoryaprataprathore28@gmail.com";
@@ -33,33 +32,75 @@ public class EmailUtil {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(SMTP_USER, "TrustLens Security"));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientEmail));
-            message.setSubject("TrustLens - OTP Verification Code");
+            message.setSubject("🔒 TrustLens Verification Code: " + otpCode);
 
-            String htmlContent = "<div style='font-family: Arial, sans-serif; padding: 20px; background-color: #0f172a; color: #ffffff; border-radius: 8px;'>"
-                    + "<h2 style='color: #3b82f6;'>TrustLens Account Verification</h2>"
-                    + "<p>Your One-Time Password (OTP) for account registration is:</p>"
-                    + "<h1 style='color: #22c55e; letter-spacing: 4px; font-size: 36px;'>" + otpCode + "</h1>"
-                    + "<p>This code will expire in <strong>10 minutes</strong>. Please do not share this OTP with anyone.</p>"
-                    + "<hr style='border: 1px solid #334155;'/>"
-                    + "<p style='font-size: 12px; color: #94a3b8;'>TrustLens Emergency Shelter Management System</p>"
-                    + "</div>";
+            String htmlContent = "<!DOCTYPE html>"
+                    + "<html>"
+                    + "<head><meta charset='UTF-8'></head>"
+                    + "<body style='margin: 0; padding: 0; background-color: #080E1A; font-family: \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif; color: #F8FAFC;'>"
+                    + "  <table width='100%' border='0' cellspacing='0' cellpadding='0' style='background-color: #080E1A; padding: 40px 10px;'>"
+                    + "    <tr>"
+                    + "      <td align='center'>"
+                    + "        <table width='100%' max-width='560' border='0' cellspacing='0' cellpadding='0' style='max-width: 560px; background-color: #0B1220; border: 1px solid #1E293B; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.5);'>"
+                    + "          <!-- Header Banner -->"
+                    + "          <tr>"
+                    + "            <td style='background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%); padding: 32px 32px 24px 32px; border-bottom: 1px solid #1E293B; text-align: center;'>"
+                    + "              <div style='display: inline-block; background-color: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); padding: 8px 16px; border-radius: 20px; color: #3B82F6; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; mb-2;'>"
+                    + "                Emergency Operations Platform"
+                    + "              </div>"
+                    + "              <h1 style='margin: 16px 0 0 0; color: #FFFFFF; font-size: 26px; font-weight: 700; tracking-wide;'>TrustLens</h1>"
+                    + "            </td>"
+                    + "          </tr>"
+                    + "          <!-- Body Content -->"
+                    + "          <tr>"
+                    + "            <td style='padding: 32px;'>"
+                    + "              <h2 style='margin: 0 0 12px 0; color: #F8FAFC; font-size: 18px; font-weight: 600;'>Authentication Verification</h2>"
+                    + "              <p style='margin: 0 0 24px 0; color: #94A3B8; font-size: 14px; line-height: 1.6;'>"
+                    + "                You requested a One-Time Password (OTP) to complete your account security verification on <strong>TrustLens</strong>."
+                    + "              </p>"
+                    + "              <!-- OTP Code Display Box -->"
+                    + "              <div style='background-color: #131C2E; border: 1px dashed #3B82F6; border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 24px;'>"
+                    + "                <span style='display: block; color: #64748B; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; margin-bottom: 8px;'>Your 6-Digit OTP Code</span>"
+                    + "                <div style='font-family: \"Courier New\", Courier, monospace; color: #22C55E; font-size: 38px; font-weight: 800; letter-spacing: 10px; margin: 0; text-shadow: 0 0 10px rgba(34, 197, 94, 0.2);'>"
+                    + "                  " + otpCode
+                    + "                </div>"
+                    + "                <span style='display: block; color: #94A3B8; font-size: 12px; margin-top: 10px;'>"
+                    + "                  ⏳ Expires in <strong>10 minutes</strong>"
+                    + "                </span>"
+                    + "              </div>"
+                    + "              <!-- Security Note -->"
+                    + "              <div style='background-color: rgba(239, 68, 68, 0.1); border-left: 3px solid #EF4444; border-radius: 4px; padding: 12px 16px; margin-bottom: 24px;'>"
+                    + "                <p style='margin: 0; color: #FCA5A5; font-size: 12px; line-height: 1.5;'>"
+                    + "                  <strong>Security Reminder:</strong> Never share this code with anyone. TrustLens personnel will never ask for your verification code."
+                    + "                </p>"
+                    + "              </div>"
+                    + "            </td>"
+                    + "          </tr>"
+                    + "          <!-- Footer -->"
+                    + "          <tr>"
+                    + "            <td style='background-color: #080E1A; padding: 24px 32px; border-top: 1px solid #1E293B; text-align: center;'>"
+                    + "              <p style='margin: 0 0 6px 0; color: #64748B; font-size: 12px;'>"
+                    + "                TrustLens System — AI-Powered Shelter Readiness & Dynamic Allocation"
+                    + "              </p>"
+                    + "              <p style='margin: 0; color: #475569; font-size: 11px;'>"
+                    + "                This is an automated operational alert. Please do not reply to this email."
+                    + "              </p>"
+                    + "            </td>"
+                    + "          </tr>"
+                    + "        </table>"
+                    + "      </td>"
+                    + "    </tr>"
+                    + "  </table>"
+                    + "</body>"
+                    + "</html>";
 
             message.setContent(htmlContent, "text/html; charset=utf-8");
-
-            // In local development, if SMTP is not configured, print to console as fallback
-            if ("your-email@gmail.com".equals(SMTP_USER)) {
-                System.out.println("=================================================");
-                System.out.println("[LOCAL DEV OTP SIMULATION] Sent to: " + recipientEmail);
-                System.out.println("[LOCAL DEV OTP CODE]: " + otpCode);
-                System.out.println("=================================================");
-                return true;
-            }
-
             Transport.send(message);
+            System.out.println("✅ Real OTP email sent successfully to: " + recipientEmail);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
-            System.err.println("Failed to send OTP email: " + e.getMessage());
+            System.err.println("❌ Failed to send OTP email: " + e.getMessage());
             return false;
         }
     }

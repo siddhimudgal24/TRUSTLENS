@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import PageHeader from "../components/layout/PageHeader";
 import { affectedZones, type AffectedZone, type Shelter } from "../data/mockData";
 import { useShelterStore } from "../store/shelterStore";
@@ -67,22 +68,30 @@ function findSuitableShelters(
     .sort(
       (first, second) =>
         second.suitability - first.suitability ||
-        first.distanceKm - second.distanceKm
+        first.distanceKm - second.distanceKm ||
+        first.shelter.id.localeCompare(second.shelter.id)
     );
 
   let peopleRemaining = zone.population;
 
-  return rankedShelters.map(({ shelter, distanceKm, suitability }) => {
+  return rankedShelters.flatMap(({ shelter, distanceKm, suitability }) => {
     const available = Math.max(0, shelter.capacity - shelter.occupied);
-    const suggestedPeople = Math.min(peopleRemaining, available);
+    const suggestedPeople = Math.min(
+      Math.max(0, peopleRemaining),
+      available
+    );
     peopleRemaining -= suggestedPeople;
 
-    return { shelter, distanceKm, suitability, suggestedPeople };
+    return suggestedPeople > 0
+      ? [{ shelter, distanceKm, suitability, suggestedPeople }]
+      : [];
   });
 }
 
 function Allocation() {
+  const navigate = useNavigate();
   const shelters = useShelterStore((state) => state.shelters);
+  const selectShelter = useShelterStore((state) => state.selectShelter);
   const [isRunning, setIsRunning] = useState(false);
   const [isAllocated, setIsAllocated] = useState(false);
   const [selectedZoneId, setSelectedZoneId] = useState(
@@ -217,7 +226,8 @@ function Allocation() {
               Find Suitable Shelters
             </h2>
             <p className="mt-1 text-xs text-gray-500">
-              Rank available shelters by readiness, safety, road access and distance.
+              Require safe conditions and usable road access; rank by readiness
+              (80%) and proximity (20%). Distances are straight-line estimates.
             </p>
           </div>
 
@@ -266,9 +276,15 @@ function Allocation() {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+                <div
+                  aria-label="Suitable shelter recommendations"
+                  className="grid grid-cols-1 gap-3 lg:grid-cols-2"
+                >
                   {recommendations.map(
-                    ({ shelter, distanceKm, suitability, suggestedPeople }) => (
+                    (
+                      { shelter, distanceKm, suitability, suggestedPeople },
+                      index
+                    ) => (
                       <article
                         key={shelter.id}
                         className="rounded-lg border border-white/10 bg-[#070B14] p-4"
@@ -282,12 +298,19 @@ function Allocation() {
                               {shelter.id} · {distanceKm.toFixed(1)} km away
                             </p>
                           </div>
-                          <span className="rounded-md border border-emerald-500/20 bg-emerald-500/10 px-2 py-1 text-[10px] font-semibold text-emerald-400">
-                            {suitability}% match
-                          </span>
+                          <div className="flex flex-wrap items-center justify-end gap-2">
+                            {index === 0 && (
+                              <span className="rounded-md border border-blue-500/20 bg-blue-500/10 px-2 py-1 text-[10px] font-semibold text-blue-400">
+                                BEST MATCH
+                              </span>
+                            )}
+                            <span className="rounded-md border border-emerald-500/20 bg-emerald-500/10 px-2 py-1 text-[10px] font-semibold text-emerald-400">
+                              {suitability}% match
+                            </span>
+                          </div>
                         </div>
 
-                        <div className="mt-4 grid grid-cols-3 gap-2 text-[10px]">
+                        <div className="mt-4 grid grid-cols-2 gap-x-2 gap-y-3 text-[10px] sm:grid-cols-4">
                           <div>
                             <p className="text-gray-500">Readiness</p>
                             <p className="mt-1 font-semibold">
@@ -309,7 +332,24 @@ function Allocation() {
                               {suggestedPeople.toLocaleString()}
                             </p>
                           </div>
+                          <div>
+                            <p className="text-gray-500">Safety / road</p>
+                            <p className="mt-1 font-semibold">
+                              {shelter.safety}% / {shelter.roadAccess}%
+                            </p>
+                          </div>
                         </div>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            selectShelter(shelter);
+                            navigate("/shelters");
+                          }}
+                          className="mt-4 rounded-md border border-cyan-500/30 bg-cyan-500/10 px-3 py-2 text-[10px] font-semibold text-cyan-400 transition hover:bg-cyan-500/20"
+                        >
+                          VIEW SHELTER DETAILS
+                        </button>
                       </article>
                     )
                   )}

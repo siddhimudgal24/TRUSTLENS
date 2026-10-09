@@ -17,6 +17,7 @@ const Allocation = lazy(() => import("./pages/Allocation"));
 const Scenarios = lazy(() => import("./pages/Scenarios"));
 const Analytics = lazy(() => import("./pages/Analytics"));
 const Readiness = lazy(() => import("./pages/Readiness"));
+const EmergencyAlerts = lazy(() => import("./pages/EmergencyAlerts"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 function App() {
@@ -42,6 +43,7 @@ function App() {
               <Route path="/shelters" element={<Shelters />} />
               <Route path="/inspection" element={<Inspection />} />
               <Route path="/readiness" element={<Readiness />} />
+              <Route path="/alerts" element={<EmergencyAlerts />} />
               <Route path="/allocation" element={<Allocation />} />
               <Route path="/scenarios" element={<Scenarios />} />
               <Route path="/analytics" element={<Analytics />} />

@@ -1,5 +1,6 @@
 import {
   Activity,
+  BellRing,
   BarChart3,
   Building2,
   LayoutDashboard,
@@ -19,6 +20,7 @@ const menuItems = [
   { name: "Inspection", icon: ScanSearch, path: "/inspection" },
   { name: "Readiness", icon: ShieldCheck, path: "/readiness" },
   { name: "Allocation", icon: Route, path: "/allocation" },
+  { name: "Emergency Alerts", icon: BellRing, path: "/alerts" },
   { name: "Scenarios", icon: Waves, path: "/scenarios" },
   { name: "Analytics", icon: BarChart3, path: "/analytics" },
 ];

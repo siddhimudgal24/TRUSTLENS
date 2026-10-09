@@ -4,6 +4,7 @@ import { useMemo, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { affectedZones, type Shelter } from "../../data/mockData";
 import { useShelterStore } from "../../store/shelterStore";
+import { useEmergencyAlertStore } from "../../store/emergencyAlertStore";
 
 interface SearchResult {
   label: string;
@@ -13,11 +14,14 @@ interface SearchResult {
 }
 
 function Topbar() {
-  const navigate = useNavigate();
   const shelters = useShelterStore((state) => state.shelters);
   const selectShelter = useShelterStore((state) => state.selectShelter);
+  const activeAlertCount = useEmergencyAlertStore(
+    (state) => state.alerts.filter((alert) => alert.status === "active").length
+  );
   const [query, setQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const navigate = useNavigate();
 
   const results = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -136,14 +140,23 @@ function Topbar() {
         </div>
       </div>
 
-      <div
-        aria-hidden="true"
-        title="Notifications are not connected"
-        className="relative rounded-lg p-2 text-slate-400"
+      <button
+        type="button"
+        onClick={() => navigate("/alerts")}
+        aria-label={`Emergency alerts, ${activeAlertCount} active`}
+        title="Open emergency alerts"
+        className="relative rounded-lg p-2 text-slate-600 transition hover:bg-slate-100 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-200"
       >
         <Bell size={18} />
-      </div>
-      <span className="sr-only">Notifications are not connected</span>
+        {activeAlertCount > 0 && (
+          <span
+            aria-hidden="true"
+            className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[9px] font-bold leading-none text-white"
+          >
+            {activeAlertCount > 99 ? "99+" : activeAlertCount}
+          </span>
+        )}
+      </button>
       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#29486f] text-xs font-semibold text-white">
         S
       </div>

@@ -7,10 +7,10 @@ import java.util.Properties;
 
 public class EmailUtil {
 
-    private static final String SMTP_HOST = System.getenv("SMTP_HOST") != null ? System.getenv("SMTP_HOST") : "smtp.gmail.com";
-    private static final String SMTP_PORT = System.getenv("SMTP_PORT") != null ? System.getenv("SMTP_PORT") : "587";
-    private static final String SMTP_USER = System.getenv("SMTP_USER") != null ? System.getenv("SMTP_USER") : "shoryaprataprathore28@gmail.com";
-    private static final String SMTP_PASS = System.getenv("SMTP_PASS") != null ? System.getenv("SMTP_PASS") : "jmbteuwgkitqdeab";
+    private static final String SMTP_HOST = DotenvUtil.get("SMTP_HOST", "smtp.gmail.com");
+    private static final String SMTP_PORT = DotenvUtil.get("SMTP_PORT", "587");
+    private static final String SMTP_USER = DotenvUtil.get("SMTP_USER", "your-email@gmail.com");
+    private static final String SMTP_PASS = DotenvUtil.get("SMTP_PASS", "your-app-password");
 
     public static boolean sendOtpEmail(String recipientEmail, String otpCode) {
         Properties props = new Properties();

@@ -6,7 +6,8 @@ import { useShelterStore } from "../store/shelterStore";
 import { calculateReadiness } from "../utils/readiness";
 
 interface AllocationRecord {
-  id: number;
+  id: string;
+  zoneId: string;
   zone: string;
   population: number;
   shelter: string;
@@ -14,6 +15,14 @@ interface AllocationRecord {
   distance: string;
   readiness: number;
   priority: "HIGH" | "MEDIUM" | "LOW";
+}
+
+interface AllocationCandidate {
+  zone: AffectedZone;
+  shelter: Shelter;
+  distanceKm: number;
+  readiness: number;
+  suitability: number;
 }
 
 interface ShelterRecommendation {
@@ -39,13 +48,47 @@ function getDistanceKm(
   return 6371 * 2 * Math.atan2(Math.sqrt(haversine), Math.sqrt(1 - haversine));
 }
 
+function getAvailableCapacity(shelter: Shelter) {
+  if (
+    !Number.isFinite(shelter.capacity) ||
+    !Number.isFinite(shelter.occupied) ||
+    shelter.capacity <= 0
+  ) {
+    return 0;
+  }
+
+  return Math.max(
+    0,
+    Math.min(shelter.capacity, shelter.capacity - shelter.occupied)
+  );
+}
+
+function getSuitabilityScore(shelter: Shelter, distanceKm: number) {
+  const availableCapacity = getAvailableCapacity(shelter);
+  const capacityScore =
+    shelter.capacity > 0
+      ? Math.min(100, (availableCapacity / shelter.capacity) * 100)
+      : 0;
+  const proximityScore = Math.max(0, 100 - distanceKm * 10);
+
+  return Math.round(
+    shelter.safety * 0.25 +
+      shelter.accessibility * 0.15 +
+      capacityScore * 0.15 +
+      shelter.hazardExposure * 0.15 +
+      shelter.essentialServices * 0.1 +
+      shelter.roadAccess * 0.1 +
+      proximityScore * 0.1
+  );
+}
+
 function findSuitableShelters(
   zone: AffectedZone,
   shelters: Shelter[]
 ): ShelterRecommendation[] {
   const rankedShelters = shelters
     .filter((shelter) => {
-      const available = shelter.capacity - shelter.occupied;
+      const available = getAvailableCapacity(shelter);
       return (
         (shelter.status === "recommended" ||
           shelter.status === "conditional") &&
@@ -57,12 +100,13 @@ function findSuitableShelters(
     .map((shelter) => {
       const distanceKm = getDistanceKm(zone, shelter);
       const readiness = calculateReadiness(shelter);
-      const proximityScore = Math.max(0, 100 - distanceKm * 10);
 
       return {
         shelter,
         distanceKm,
-        suitability: Math.round(readiness * 0.8 + proximityScore * 0.2),
+        suitability: Math.round(
+          readiness * 0.8 + Math.max(0, 100 - distanceKm * 10) * 0.2
+        ),
       };
     })
     .sort(
@@ -88,12 +132,171 @@ function findSuitableShelters(
   });
 }
 
+function calculateAllocation(
+  zones: AffectedZone[],
+  shelters: Shelter[]
+): AllocationRecord[] {
+  const eligibleShelters = shelters.filter(
+    (shelter) =>
+      shelter.capacity > 0 &&
+      getAvailableCapacity(shelter) > 0 &&
+      (shelter.status === "recommended" ||
+        shelter.status === "conditional") &&
+      shelter.safety >= 60 &&
+      shelter.roadAccess >= 50
+  );
+  const totalDemand = zones.reduce(
+    (total, zone) => total + Math.max(0, Math.floor(zone.population)),
+    0
+  );
+  const allocationBudget = Math.floor(
+    Math.min(
+      totalDemand,
+      eligibleShelters.reduce(
+        (total, shelter) => total + getAvailableCapacity(shelter),
+        0
+      )
+    )
+  );
+  const proportionalTargets = zones.map((zone) => {
+    const demand = Math.max(0, Math.floor(zone.population));
+    const exactTarget =
+      totalDemand > 0 ? (allocationBudget * demand) / totalDemand : 0;
+    const target = Math.floor(exactTarget);
+
+    return {
+      zone,
+      demand,
+      target,
+      remainder: exactTarget - target,
+    };
+  });
+  let remainingBudget =
+    allocationBudget -
+    proportionalTargets.reduce((total, target) => total + target.target, 0);
+
+  for (const target of [...proportionalTargets].sort(
+    (first, second) =>
+      second.remainder - first.remainder ||
+      first.zone.id.localeCompare(second.zone.id)
+  )) {
+    if (remainingBudget <= 0) break;
+    if (target.target >= target.demand) continue;
+
+    target.target += 1;
+    remainingBudget -= 1;
+  }
+
+  const candidates: AllocationCandidate[] = zones.flatMap((zone) =>
+    eligibleShelters.map((shelter) => {
+      const distanceKm = getDistanceKm(zone, shelter);
+
+      return {
+        zone,
+        shelter,
+        distanceKm,
+        readiness: calculateReadiness(shelter),
+        suitability: getSuitabilityScore(shelter, distanceKm),
+      };
+    })
+  );
+
+  candidates.sort(
+    (first, second) =>
+      second.suitability - first.suitability ||
+      first.distanceKm - second.distanceKm ||
+      first.zone.id.localeCompare(second.zone.id) ||
+      first.shelter.id.localeCompare(second.shelter.id)
+  );
+
+  const remainingDemand = new Map(
+    proportionalTargets.map(({ zone, target }) => [zone.id, target])
+  );
+  const remainingCapacity = new Map(
+    eligibleShelters.map((shelter) => [
+      shelter.id,
+      getAvailableCapacity(shelter),
+    ])
+  );
+  const assignedByZone = new Map<string, number>();
+  const assignments: AllocationRecord[] = [];
+
+  for (const candidate of candidates) {
+    const demand = remainingDemand.get(candidate.zone.id) ?? 0;
+    const capacity = remainingCapacity.get(candidate.shelter.id) ?? 0;
+    const assigned = Math.min(demand, capacity);
+
+    if (assigned <= 0) continue;
+
+    remainingDemand.set(candidate.zone.id, demand - assigned);
+    remainingCapacity.set(candidate.shelter.id, capacity - assigned);
+    assignedByZone.set(
+      candidate.zone.id,
+      (assignedByZone.get(candidate.zone.id) ?? 0) + assigned
+    );
+    assignments.push({
+      id: `${candidate.zone.id}-${candidate.shelter.id}`,
+      zoneId: candidate.zone.id,
+      zone: candidate.zone.name,
+      population: candidate.zone.population,
+      shelter: candidate.shelter.name,
+      allocated: assigned,
+      distance: `${candidate.distanceKm.toFixed(1)} km`,
+      readiness: candidate.readiness,
+      priority: "LOW",
+    });
+  }
+
+  const remainingByZone = new Map(
+    zones.map((zone) => [
+      zone.id,
+      Math.max(0, Math.floor(zone.population)) -
+        (assignedByZone.get(zone.id) ?? 0),
+    ])
+  );
+
+  for (const assignment of assignments) {
+    const zone = zones.find((candidate) => candidate.id === assignment.zoneId);
+    const unassigned = remainingByZone.get(assignment.zoneId) ?? 0;
+
+    assignment.priority =
+      unassigned === 0
+        ? "LOW"
+        : unassigned / Math.max(1, zone?.population ?? 0) >= 0.5
+          ? "HIGH"
+          : "MEDIUM";
+  }
+
+  for (const zone of zones) {
+    const unassigned = remainingByZone.get(zone.id) ?? 0;
+    if (unassigned <= 0) continue;
+
+    assignments.push({
+      id: `${zone.id}-unassigned`,
+      zoneId: zone.id,
+      zone: zone.name,
+      population: zone.population,
+      shelter: "Unassigned — no suitable capacity",
+      allocated: 0,
+      distance: "—",
+      readiness: 0,
+      priority:
+        unassigned / Math.max(1, zone.population) >= 0.5
+          ? "HIGH"
+          : "MEDIUM",
+    });
+  }
+
+  return assignments;
+}
+
 function Allocation() {
   const navigate = useNavigate();
   const shelters = useShelterStore((state) => state.shelters);
   const selectShelter = useShelterStore((state) => state.selectShelter);
   const [isRunning, setIsRunning] = useState(false);
   const [isAllocated, setIsAllocated] = useState(false);
+  const [records, setRecords] = useState<AllocationRecord[]>([]);
   const [selectedZoneId, setSelectedZoneId] = useState(
     affectedZones[0]?.id ?? ""
   );
@@ -114,61 +317,20 @@ function Allocation() {
     ? selectedZone.population - suggestedTotal
     : 0;
 
-  const [records] = useState<AllocationRecord[]>([
-    {
-      id: 1,
-      zone: "Zone A — Mansarovar",
-      population: 850,
-      shelter: "Shelter A-102",
-      allocated: 520,
-      distance: "2.1 km",
-      readiness: 94,
-      priority: "HIGH",
-    },
-    {
-      id: 2,
-      zone: "Zone B — Sanganer",
-      population: 620,
-      shelter: "Shelter B-204",
-      allocated: 410,
-      distance: "3.4 km",
-      readiness: 87,
-      priority: "HIGH",
-    },
-    {
-      id: 3,
-      zone: "Zone C — Durgapura",
-      population: 480,
-      shelter: "Shelter C-301",
-      allocated: 320,
-      distance: "4.2 km",
-      readiness: 81,
-      priority: "MEDIUM",
-    },
-    {
-      id: 4,
-      zone: "Zone D — Jagatpura",
-      population: 350,
-      shelter: "Shelter D-118",
-      allocated: 260,
-      distance: "5.1 km",
-      readiness: 76,
-      priority: "LOW",
-    },
-  ]);
-
   useEffect(() => {
     if (!isRunning) return;
 
     const timeoutId = window.setTimeout(() => {
+      setRecords(calculateAllocation(affectedZones, shelters));
       setIsRunning(false);
       setIsAllocated(true);
     }, 2000);
 
     return () => window.clearTimeout(timeoutId);
-  }, [isRunning]);
+  }, [isRunning, shelters]);
 
   const runAllocation = () => {
+    setRecords([]);
     setIsRunning(true);
     setIsAllocated(false);
   };
@@ -176,10 +338,11 @@ function Allocation() {
   const resetAllocation = () => {
     setIsRunning(false);
     setIsAllocated(false);
+    setRecords([]);
   };
 
-  const totalPopulation = records.reduce(
-    (sum, record) => sum + record.population,
+  const totalPopulation = affectedZones.reduce(
+    (total, zone) => total + Math.max(0, zone.population),
     0
   );
 
@@ -187,18 +350,30 @@ function Allocation() {
     (sum, record) => sum + record.allocated,
     0
   );
+  const totalUnallocated = Math.max(0, totalPopulation - totalAllocated);
 
   const allocationPercentage =
     totalPopulation > 0
       ? Math.round((totalAllocated / totalPopulation) * 100)
       : 0;
+  const weightedDistance = records.reduce((total, record) => {
+    const distanceKm = Number.parseFloat(record.distance);
+    return Number.isFinite(distanceKm)
+      ? total + distanceKm * record.allocated
+      : total;
+  }, 0);
+  const averageDistance =
+    totalAllocated > 0
+      ? `${(weightedDistance / totalAllocated).toFixed(1)} km`
+      : "—";
+  const isFullyAllocated = isAllocated && totalUnallocated === 0;
 
   return (
     <div className="space-y-6 text-white">
       <PageHeader
         eyebrow="Emergency allocation engine"
         title="Smart Allocation"
-        description="Review sample assignments and run the local allocation demonstration."
+        description="Run a capacity-constrained allocation using affected-zone demand and current shelter readiness."
         status={
           <div className="flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-2">
 
@@ -213,7 +388,7 @@ function Allocation() {
       />
 
       <p className="rounded-md border border-blue-100 bg-blue-50 px-3 py-2 text-[10px] text-blue-800">
-        Allocation records are sample data. This demonstration does not contact a live allocation service.
+        This local decision-support demonstration uses bundled sample data and does not contact a live allocation service.
       </p>
 
       <section className="rounded-xl border border-white/10 bg-[#0D1320] p-4 sm:p-6">
@@ -226,8 +401,9 @@ function Allocation() {
               Find Suitable Shelters
             </h2>
             <p className="mt-1 text-xs text-gray-500">
-              Require safe conditions and usable road access; rank by readiness
-              (80%) and proximity (20%). Distances are straight-line estimates.
+              Distribute safe capacity across zones by demand, then rank shelters
+              by readiness (80%) and proximity (20%). Distances are straight-line
+              estimates.
             </p>
           </div>
 
@@ -443,7 +619,7 @@ function Allocation() {
           </p>
 
           <p className="text-3xl font-bold mt-2">
-            {records.length}
+            {affectedZones.length}
           </p>
 
           <p className="text-xs text-gray-500 mt-2">
@@ -508,7 +684,7 @@ function Allocation() {
               SAFETY
             </p>
             <p className="text-sm font-bold mt-1">
-              30%
+              25%
             </p>
           </div>
 
@@ -517,7 +693,7 @@ function Allocation() {
               ACCESSIBILITY
             </p>
             <p className="text-sm font-bold mt-1">
-              20%
+              15%
             </p>
           </div>
 
@@ -551,6 +727,15 @@ function Allocation() {
           <div className="bg-[#070B14] rounded-lg p-3">
             <p className="text-[10px] text-gray-500">
               ROAD ACCESS
+            </p>
+            <p className="text-sm font-bold mt-1">
+              10%
+            </p>
+          </div>
+
+          <div className="bg-[#070B14] rounded-lg p-3">
+            <p className="text-[10px] text-gray-500">
+              PROXIMITY
             </p>
             <p className="text-sm font-bold mt-1">
               10%
@@ -613,7 +798,7 @@ function Allocation() {
 
             {/* TABLE ROWS */}
 
-            {records.map((record) => (
+            {records.length > 0 ? records.map((record) => (
 
               <div
                 key={record.id}
@@ -632,13 +817,25 @@ function Allocation() {
                 </span>
 
 
-                <span className="text-xs text-cyan-400">
+                <span
+                  className={`text-xs ${
+                    record.allocated > 0
+                      ? "text-cyan-400"
+                      : "text-red-400"
+                  }`}
+                >
                   {record.shelter}
                 </span>
 
 
-                <span className="text-xs font-semibold text-emerald-400">
-                  {record.allocated}
+                <span
+                  className={`text-xs font-semibold ${
+                    record.allocated > 0
+                      ? "text-emerald-400"
+                      : "text-red-400"
+                  }`}
+                >
+                  {record.allocated.toLocaleString()}
                 </span>
 
 
@@ -656,7 +853,7 @@ function Allocation() {
                       : "text-red-400"
                   }`}
                 >
-                  {record.readiness}%
+                  {record.readiness > 0 ? `${record.readiness}%` : "—"}
                 </span>
 
 
@@ -674,7 +871,13 @@ function Allocation() {
 
               </div>
 
-            ))}
+            )) : (
+              <p className="border-t border-white/5 px-4 py-6 text-center text-xs text-gray-500">
+                {isRunning
+                  ? "Evaluating shelter capacity and zone demand..."
+                  : "Run smart allocation to generate assignments from the current shelter and affected-zone data."}
+              </p>
+            )}
 
           </div>
 
@@ -783,11 +986,11 @@ function Allocation() {
                 <div>
 
                   <p className="text-xs font-semibold">
-                    Calculate optimal assignment
+                    Match available capacity
                   </p>
 
                   <p className="text-[10px] text-gray-500 mt-1">
-                    Minimize risk and evacuation distance.
+                    Share capacity by zone demand, then rank suitable matches; never exceed capacity.
                   </p>
 
                 </div>
@@ -830,24 +1033,54 @@ function Allocation() {
             </p>
 
 
-            <div className="mt-4 border border-emerald-500/20 bg-emerald-500/5 rounded-xl p-4">
+            <div
+              className={`mt-4 rounded-xl border p-4 ${
+                !isAllocated
+                  ? "border-slate-200 bg-slate-50"
+                  : isFullyAllocated
+                    ? "border-emerald-500/20 bg-emerald-500/5"
+                    : "border-amber-500/20 bg-amber-500/5"
+              }`}
+            >
 
               <div className="flex gap-3">
 
-                <div className="text-emerald-400 text-xl">
-                  ✓
+                <div
+                  className={`text-xl ${
+                    !isAllocated
+                      ? "text-slate-400"
+                      : isFullyAllocated
+                        ? "text-emerald-400"
+                        : "text-amber-500"
+                  }`}
+                >
+                  {!isAllocated ? "…" : isFullyAllocated ? "✓" : "!"}
                 </div>
 
                 <div>
 
-                  <p className="text-sm font-semibold text-emerald-400">
-                    Allocation feasible
+                  <p
+                    className={`text-sm font-semibold ${
+                      !isAllocated
+                        ? "text-slate-600"
+                        : isFullyAllocated
+                          ? "text-emerald-400"
+                          : "text-amber-600"
+                    }`}
+                  >
+                    {!isAllocated
+                      ? "Allocation not yet run"
+                      : isFullyAllocated
+                        ? "All demand assigned"
+                        : "Capacity shortfall"}
                   </p>
 
                   <p className="text-[10px] text-gray-500 mt-2 leading-5">
-                    Available shelter capacity is sufficient for the
-                    current simulated demand. Priority should be given
-                    to high-risk zones.
+                    {!isAllocated
+                      ? "Run smart allocation to calculate assignments from current shelter availability."
+                      : isFullyAllocated
+                        ? "All affected-zone demand was assigned within eligible shelter capacities."
+                        : `${totalUnallocated.toLocaleString()} people remain without suitable shelter capacity. Coordinate additional resources before making an operational decision.`}
                   </p>
 
                 </div>
@@ -866,7 +1099,7 @@ function Allocation() {
                 </p>
 
                 <p className="text-lg font-bold text-orange-400 mt-1">
-                  {(totalPopulation - totalAllocated).toLocaleString()}
+                  {isAllocated ? totalUnallocated.toLocaleString() : "—"}
                 </p>
 
               </div>
@@ -879,7 +1112,7 @@ function Allocation() {
                 </p>
 
                 <p className="text-lg font-bold mt-1">
-                  3.7 km
+                  {isAllocated ? averageDistance : "—"}
                 </p>
 
               </div>
@@ -918,94 +1151,53 @@ function Allocation() {
         </div>
 
 
-        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 2xl:grid-cols-4">
+        {isAllocated ? (
+          <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {records.map((record) => (
+              <article
+                key={`flow-${record.id}`}
+                className="rounded-xl border border-white/5 bg-[#070B14] p-5"
+              >
+                <p className="text-xs text-gray-500">AFFECTED ZONE</p>
+                <p className="mt-2 text-sm font-semibold">{record.zone}</p>
+                <p className="mt-1 text-xs text-gray-400">
+                  {record.allocated.toLocaleString()} of{" "}
+                  {record.population.toLocaleString()} people assigned
+                </p>
 
+                <div className="my-3 flex items-center gap-2 text-cyan-400">
+                  <span aria-hidden="true">→</span>
+                  <span className="text-[10px] text-gray-500">
+                    {record.distance === "—"
+                      ? "No suitable route"
+                      : `${record.distance} straight-line estimate`}
+                  </span>
+                </div>
 
-          <div className="bg-[#070B14] border border-white/5 rounded-xl p-5">
-
-            <p className="text-xs text-gray-500">
-              AFFECTED ZONE
-            </p>
-
-            <p className="text-sm font-semibold mt-2">
-              Mansarovar
-            </p>
-
-            <div className="flex items-center gap-2 mt-4">
-
-              <span className="text-red-400 text-lg">
-                ●
-              </span>
-
-              <span className="text-xs text-gray-400">
-                850 people
-              </span>
-
-            </div>
-
+                <p className="text-xs text-gray-500">DESTINATION</p>
+                <p
+                  className={`mt-2 text-sm font-semibold ${
+                    record.allocated > 0
+                      ? "text-emerald-400"
+                      : "text-red-400"
+                  }`}
+                >
+                  {record.shelter}
+                </p>
+                <p className="mt-1 text-xs text-gray-400">
+                  {record.readiness > 0
+                    ? `${record.readiness}% readiness`
+                    : "Additional capacity required"}
+                </p>
+              </article>
+            ))}
           </div>
-
-
-          <div className="flex items-center justify-center text-cyan-400 text-2xl">
-            →
-          </div>
-
-
-          <div className="bg-[#070B14] border border-white/5 rounded-xl p-5">
-
-            <p className="text-xs text-gray-500">
-              ROUTE
-            </p>
-
-            <p className="text-sm font-semibold mt-2">
-              Safe Corridor 01
-            </p>
-
-            <div className="flex items-center gap-2 mt-4">
-
-              <span className="text-yellow-400 text-lg">
-                ●
-              </span>
-
-              <span className="text-xs text-gray-400">
-                2.1 km
-              </span>
-
-            </div>
-
-          </div>
-
-
-          <div className="flex items-center justify-center text-cyan-400 text-2xl">
-            →
-          </div>
-
-
-          <div className="bg-[#070B14] border border-emerald-500/10 rounded-xl p-5">
-
-            <p className="text-xs text-gray-500">
-              DESTINATION
-            </p>
-
-            <p className="text-sm font-semibold mt-2">
-              Shelter A-102
-            </p>
-
-            <div className="flex items-center gap-2 mt-4">
-
-              <span className="text-emerald-400 text-lg">
-                ●
-              </span>
-
-              <span className="text-xs text-gray-400">
-                94% readiness
-              </span>
-
-            </div>
-
-          </div>
-
-        </div>
+        ) : (
+          <p className="mt-6 rounded-lg bg-[#070B14] p-5 text-xs text-gray-500">
+            Run smart allocation to generate evacuation assignments from the
+            current zone and shelter data.
+          </p>
+        )}
 
       </div>
 
@@ -1019,8 +1211,8 @@ function Allocation() {
         </p>
 
         <p className="text-[10px] text-gray-500 mt-2 leading-5">
-          Allocation recommendations are generated using simulated
-          disaster conditions and shelter data for demonstration.
+          Allocation recommendations are generated using local affected-zone
+          and shelter sample data for demonstration.
           Actual evacuation decisions should be validated by authorized
           emergency response personnel.
         </p>

@@ -21,8 +21,8 @@ function PageHeader({
             {eyebrow}
           </p>
         )}
-        <div className="flex min-w-0 flex-wrap items-center justify-between gap-x-4 gap-y-2">
-          <h1 className="mt-1 min-w-0 text-xl font-semibold leading-tight tracking-tight sm:text-2xl">
+        <div className="flex min-w-0 items-center gap-4">
+          <h1 className="mt-1 min-w-0 flex-1 text-xl font-semibold leading-tight tracking-tight sm:text-2xl">
             {title}
           </h1>
           {status && <div className="max-w-full shrink-0">{status}</div>}

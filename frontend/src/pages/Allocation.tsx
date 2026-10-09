@@ -1,6 +1,8 @@
-import { useState } from "react";
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import PageHeader from "../components/layout/PageHeader";
+import { affectedZones, type AffectedZone, type Shelter } from "../data/mockData";
+import { useShelterStore } from "../store/shelterStore";
+import { calculateReadiness } from "../utils/readiness";
 
 interface AllocationRecord {
   id: number;
@@ -13,9 +15,95 @@ interface AllocationRecord {
   priority: "HIGH" | "MEDIUM" | "LOW";
 }
 
+interface ShelterRecommendation {
+  shelter: Shelter;
+  distanceKm: number;
+  suitability: number;
+  suggestedPeople: number;
+}
+
+function getDistanceKm(
+  origin: Pick<AffectedZone, "lat" | "lng">,
+  destination: Pick<Shelter, "lat" | "lng">
+) {
+  const radians = (degrees: number) => (degrees * Math.PI) / 180;
+  const latitudeDifference = radians(destination.lat - origin.lat);
+  const longitudeDifference = radians(destination.lng - origin.lng);
+  const haversine =
+    Math.sin(latitudeDifference / 2) ** 2 +
+    Math.cos(radians(origin.lat)) *
+      Math.cos(radians(destination.lat)) *
+      Math.sin(longitudeDifference / 2) ** 2;
+
+  return 6371 * 2 * Math.atan2(Math.sqrt(haversine), Math.sqrt(1 - haversine));
+}
+
+function findSuitableShelters(
+  zone: AffectedZone,
+  shelters: Shelter[]
+): ShelterRecommendation[] {
+  const rankedShelters = shelters
+    .filter((shelter) => {
+      const available = shelter.capacity - shelter.occupied;
+      return (
+        (shelter.status === "recommended" ||
+          shelter.status === "conditional") &&
+        shelter.safety >= 60 &&
+        shelter.roadAccess >= 50 &&
+        available > 0
+      );
+    })
+    .map((shelter) => {
+      const distanceKm = getDistanceKm(zone, shelter);
+      const readiness = calculateReadiness(shelter);
+      const proximityScore = Math.max(0, 100 - distanceKm * 10);
+
+      return {
+        shelter,
+        distanceKm,
+        suitability: Math.round(readiness * 0.8 + proximityScore * 0.2),
+      };
+    })
+    .sort(
+      (first, second) =>
+        second.suitability - first.suitability ||
+        first.distanceKm - second.distanceKm
+    );
+
+  let peopleRemaining = zone.population;
+
+  return rankedShelters.map(({ shelter, distanceKm, suitability }) => {
+    const available = Math.max(0, shelter.capacity - shelter.occupied);
+    const suggestedPeople = Math.min(peopleRemaining, available);
+    peopleRemaining -= suggestedPeople;
+
+    return { shelter, distanceKm, suitability, suggestedPeople };
+  });
+}
+
 function Allocation() {
+  const shelters = useShelterStore((state) => state.shelters);
   const [isRunning, setIsRunning] = useState(false);
   const [isAllocated, setIsAllocated] = useState(false);
+  const [selectedZoneId, setSelectedZoneId] = useState(
+    affectedZones[0]?.id ?? ""
+  );
+  const [hasSearched, setHasSearched] = useState(false);
+  const selectedZone = affectedZones.find((zone) => zone.id === selectedZoneId);
+  const recommendations = useMemo(
+    () =>
+      selectedZone
+        ? findSuitableShelters(selectedZone, shelters)
+        : [],
+    [selectedZone, shelters]
+  );
+  const suggestedTotal = recommendations.reduce(
+    (total, recommendation) => total + recommendation.suggestedPeople,
+    0
+  );
+  const unassignedPopulation = selectedZone
+    ? selectedZone.population - suggestedTotal
+    : 0;
 
   const [records] = useState<AllocationRecord[]>([
     {
@@ -118,6 +206,139 @@ function Allocation() {
       <p className="rounded-md border border-blue-100 bg-blue-50 px-3 py-2 text-[10px] text-blue-800">
         Allocation records are sample data. This demonstration does not contact a live allocation service.
       </p>
+
+      <section className="rounded-xl border border-white/10 bg-[#0D1320] p-4 sm:p-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-wider text-cyan-400">
+              Shelter matching
+            </p>
+            <h2 className="mt-1 text-lg font-semibold">
+              Find Suitable Shelters
+            </h2>
+            <p className="mt-1 text-xs text-gray-500">
+              Rank available shelters by readiness, safety, road access and distance.
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-3 sm:min-w-[min(100%,24rem)] sm:flex-row">
+            <label className="min-w-0 flex-1 text-xs text-gray-500">
+              Affected zone
+              <select
+                aria-label="Affected zone"
+                value={selectedZoneId}
+                onChange={(event) => {
+                  setSelectedZoneId(event.target.value);
+                  setHasSearched(false);
+                }}
+                className="mt-1.5 w-full rounded-lg border border-white/10 bg-[#070B14] px-3 py-2.5 text-sm text-white"
+              >
+                {affectedZones.map((zone) => (
+                  <option key={zone.id} value={zone.id}>
+                    {zone.name} ({zone.population.toLocaleString()} people)
+                  </option>
+                ))}
+              </select>
+            </label>
+            <button
+              type="button"
+              disabled={!selectedZone}
+              onClick={() => setHasSearched(true)}
+              className="self-end rounded-lg bg-cyan-500 px-5 py-2.5 text-xs font-bold text-black transition hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              FIND SUITABLE SHELTERS
+            </button>
+          </div>
+        </div>
+
+        {hasSearched && selectedZone && (
+          <div className="mt-5 border-t border-white/10 pt-5">
+            {recommendations.length > 0 ? (
+              <>
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+                  <p className="text-sm font-semibold">
+                    Recommended for {selectedZone.name}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {suggestedTotal.toLocaleString()} of{" "}
+                    {selectedZone.population.toLocaleString()} people can be
+                    placed
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+                  {recommendations.map(
+                    ({ shelter, distanceKm, suitability, suggestedPeople }) => (
+                      <article
+                        key={shelter.id}
+                        className="rounded-lg border border-white/10 bg-[#070B14] p-4"
+                      >
+                        <div className="flex flex-wrap items-start justify-between gap-3">
+                          <div>
+                            <p className="text-sm font-semibold">
+                              {shelter.name}
+                            </p>
+                            <p className="mt-0.5 text-[10px] text-gray-500">
+                              {shelter.id} · {distanceKm.toFixed(1)} km away
+                            </p>
+                          </div>
+                          <span className="rounded-md border border-emerald-500/20 bg-emerald-500/10 px-2 py-1 text-[10px] font-semibold text-emerald-400">
+                            {suitability}% match
+                          </span>
+                        </div>
+
+                        <div className="mt-4 grid grid-cols-3 gap-2 text-[10px]">
+                          <div>
+                            <p className="text-gray-500">Readiness</p>
+                            <p className="mt-1 font-semibold">
+                              {calculateReadiness(shelter)}%
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-gray-500">Spaces available</p>
+                            <p className="mt-1 font-semibold">
+                              {Math.max(
+                                0,
+                                shelter.capacity - shelter.occupied
+                              ).toLocaleString()}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-gray-500">Suggested placement</p>
+                            <p className="mt-1 font-semibold text-emerald-400">
+                              {suggestedPeople.toLocaleString()}
+                            </p>
+                          </div>
+                        </div>
+                      </article>
+                    )
+                  )}
+                </div>
+
+                {unassignedPopulation > 0 && (
+                  <p
+                    role="status"
+                    className="mt-4 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800"
+                  >
+                    Current suitable capacity leaves{" "}
+                    {unassignedPopulation.toLocaleString()} people without a
+                    placement. Review other resources before making an
+                    operational decision.
+                  </p>
+                )}
+              </>
+            ) : (
+              <p
+                role="status"
+                className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800"
+              >
+                No available shelters meet the current safety and access
+                criteria for this zone.
+              </p>
+            )}
+          </div>
+        )}
+      </section>
 
 
       {/* KPI CARDS */}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   MapContainer,
@@ -7,6 +7,7 @@ import {
   Polyline,
   Circle,
   Popup,
+  useMap,
 } from "react-leaflet";
 
 import ShelterMarker from "./ShelterMarker";
@@ -22,7 +23,9 @@ import {
 
 import { useShelterStore } from "../../store/shelterStore";
 
-function LiveShelterMap() {
+type MapPosition = [number, number];
+
+function LiveShelterMap({ focus }: { focus?: MapPosition }) {
   const shelters = useShelterStore(
     (state) => state.shelters
   );
@@ -60,11 +63,13 @@ function LiveShelterMap() {
   return (
     <div className="relative w-full h-full">
       <MapContainer
-        center={center}
-        zoom={13}
+        center={focus ?? center}
+        zoom={focus ? 14 : 13}
         scrollWheelZoom={true}
         className="w-full h-full rounded-xl"
       >
+        {focus && <MapFocus position={focus} />}
+
         <TileLayer
           attribution="&copy; OpenStreetMap contributors"
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -74,10 +79,10 @@ function LiveShelterMap() {
           <Polygon
             positions={floodZone}
             pathOptions={{
-              color: "red",
-              fillColor: "red",
-              fillOpacity: 0.35,
-              weight: 4,
+              color: "#4b9de8",
+              fillColor: "#63b4f2",
+              fillOpacity: 0.24,
+              weight: 2,
             }}
           >
             <Popup>
@@ -94,9 +99,9 @@ function LiveShelterMap() {
               key={`road-${index}`}
               positions={road}
               pathOptions={{
-                color: "blue",
-                weight: 6,
-                opacity: 0.8,
+                color: "#f5ad36",
+                weight: 4,
+                opacity: 0.9,
               }}
             />
           ))}
@@ -107,8 +112,9 @@ function LiveShelterMap() {
               key={`blocked-road-${index}`}
               positions={road}
               pathOptions={{
-                color: "red",
-                weight: 10,
+                color: "#e94d4d",
+                weight: 6,
+                opacity: 0.95,
                 dashArray: "10 10",
               }}
             />
@@ -121,10 +127,10 @@ function LiveShelterMap() {
               center={[zone.lat, zone.lng]}
               radius={500}
               pathOptions={{
-                color: "orange",
-                fillColor: "orange",
-                fillOpacity: 0.35,
-                weight: 3,
+                color: "#7c58ef",
+                fillColor: "#795cf1",
+                fillOpacity: 0.22,
+                weight: 2,
               }}
             >
               <Popup>
@@ -159,6 +165,16 @@ function LiveShelterMap() {
       />
     </div>
   );
+}
+
+function MapFocus({ position }: { position: MapPosition }) {
+  const map = useMap();
+
+  useEffect(() => {
+    map.flyTo(position, 14);
+  }, [map, position]);
+
+  return null;
 }
 
 export default LiveShelterMap;

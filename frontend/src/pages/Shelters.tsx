@@ -1,10 +1,13 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 import { useShelterStore } from "../store/shelterStore";
+import PageHeader from "../components/layout/PageHeader";
+import type { Shelter } from "../data/mockData";
 
 function Shelters() {
   const shelters = useShelterStore((state) => state.shelters);
   const selectedShelter = useShelterStore((state) => state.selectedShelter);
   const selectShelter = useShelterStore((state) => state.selectShelter);
+  const updateShelter = useShelterStore((state) => state.updateShelter);
 
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
@@ -53,7 +56,7 @@ function Shelters() {
         return "border-yellow-500/30 bg-yellow-500/10 text-yellow-400";
 
       case "avoid":
-        return "border-orange-500/30 bg-orange-500/10 text-orange-400";
+        return "border-red-500/30 bg-red-500/10 text-red-400";
 
       default:
         return "border-red-500/30 bg-red-500/10 text-red-400";
@@ -83,33 +86,23 @@ function Shelters() {
   };
 
   return (
-    <div className="min-h-screen bg-[#070B14] text-white p-6">
-
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <p className="text-xs uppercase tracking-[0.25em] text-cyan-400 mb-2">
-            SHELTERX / EMERGENCY OPERATIONS
-          </p>
-
-          <h1 className="text-3xl font-bold">
-            Shelter Management
-          </h1>
-
-          <p className="text-sm text-gray-400 mt-2">
-            Monitor shelter readiness, capacity and operational status.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2 border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 rounded-lg">
+    <div className="space-y-6 text-white">
+      <PageHeader
+        eyebrow="Shelter operations"
+        title="Shelter Management"
+        description="Monitor shelter readiness, capacity and operational status."
+        status={
+          <div className="flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-2">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
 
           <span className="text-xs font-semibold text-emerald-400">
-            SYSTEM OPERATIONAL
+            SAMPLE RECORDS
           </span>
-        </div>
-      </div>
+          </div>
+        }
+      />
 
-      <div className="grid grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
 
         <div className="bg-[#0D1320] border border-white/10 rounded-xl p-5">
           <p className="text-xs text-gray-500 uppercase tracking-wider">
@@ -173,16 +166,17 @@ function Shelters() {
 
       </div>
 
-      <div className="bg-[#0D1320] border border-white/10 rounded-xl p-4 mb-6">
+      <div className="rounded-xl border border-white/10 bg-[#0D1320] p-4">
 
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-2">
 
           <input
             type="text"
+            aria-label="Search shelters by name"
             placeholder="Search shelter..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="flex-1 bg-[#070B14] border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder-gray-500 outline-none focus:border-cyan-500/50"
+            className="w-full min-w-0 flex-1 rounded-lg border border-white/10 bg-[#070B14] px-4 py-3 text-sm text-white placeholder-gray-500 outline-none focus:border-cyan-500/50 sm:w-auto"
           />
 
           <button
@@ -232,7 +226,7 @@ function Shelters() {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 2xl:grid-cols-3">
 
         {filteredShelters.map((shelter) => {
 
@@ -247,7 +241,19 @@ function Shelters() {
             <div
               key={shelter.id}
               onClick={() => selectShelter(shelter)}
-              className="bg-[#0D1320] border border-white/10 rounded-xl p-5 cursor-pointer hover:border-cyan-500/40 hover:bg-[#101827] transition-all"
+              role="button"
+              tabIndex={0}
+              aria-label={`View ${shelter.name} details`}
+              onKeyDown={(event) => {
+                if (
+                  event.target === event.currentTarget &&
+                  (event.key === "Enter" || event.key === " ")
+                ) {
+                  event.preventDefault();
+                  selectShelter(shelter);
+                }
+              }}
+              className="cursor-pointer rounded-xl border border-white/10 bg-[#0D1320] p-5 transition-all hover:border-cyan-500/40 hover:bg-[#101827] focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600"
             >
 
               <div className="flex items-start justify-between">
@@ -465,29 +471,11 @@ function Shelters() {
 
             </div>
 
-            <div className="grid grid-cols-2 gap-3 mt-4">
-
-              <div className="bg-[#0D1320] border border-white/10 rounded-xl p-4">
-                <p className="text-xs text-gray-500">
-                  Capacity
-                </p>
-
-                <p className="text-xl font-bold mt-2">
-                  {selectedShelter.capacity.toLocaleString()}
-                </p>
-              </div>
-
-              <div className="bg-[#0D1320] border border-white/10 rounded-xl p-4">
-                <p className="text-xs text-gray-500">
-                  Occupied
-                </p>
-
-                <p className="text-xl font-bold mt-2">
-                  {selectedShelter.occupied.toLocaleString()}
-                </p>
-              </div>
-
-            </div>
+            <ShelterCapacityEditor
+              key={selectedShelter.id}
+              shelter={selectedShelter}
+              updateShelter={updateShelter}
+            />
 
             <div className="bg-[#0D1320] border border-white/10 rounded-xl p-5 mt-4">
 
@@ -546,7 +534,7 @@ function Shelters() {
             <div className="mt-4 rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-4">
 
               <p className="text-xs font-semibold text-cyan-400">
-                SHELTERX DECISION SUPPORT
+                TRUSTLENS DECISION SUPPORT
               </p>
 
               <p className="text-xs text-gray-400 mt-2 leading-5">
@@ -563,6 +551,123 @@ function Shelters() {
       )}
 
     </div>
+  );
+}
+
+function ShelterCapacityEditor({
+  shelter,
+  updateShelter,
+}: {
+  shelter: Shelter;
+  updateShelter: (
+    id: string,
+    updates: Partial<Shelter>
+  ) => boolean;
+}) {
+  const [capacityInput, setCapacityInput] = useState(String(shelter.capacity));
+  const [occupiedInput, setOccupiedInput] = useState(String(shelter.occupied));
+  const [error, setError] = useState("");
+  const [saved, setSaved] = useState(false);
+
+  const saveCapacity = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSaved(false);
+
+    const capacity = Number(capacityInput);
+    const occupied = Number(occupiedInput);
+    if (
+      !Number.isSafeInteger(capacity) ||
+      !Number.isSafeInteger(occupied) ||
+      capacity < 0 ||
+      occupied < 0
+    ) {
+      setError("Enter valid whole numbers of zero or more.");
+      return;
+    }
+    if (occupied > capacity) {
+      setError("Occupied places cannot exceed total capacity.");
+      return;
+    }
+
+    if (!updateShelter(shelter.id, { capacity, occupied })) {
+      setError("Capacity could not be saved. Check the values and try again.");
+      return;
+    }
+    setError("");
+    setSaved(true);
+  };
+
+  return (
+    <form
+      onSubmit={saveCapacity}
+      className="mt-4 rounded-xl border border-white/10 bg-[#0D1320] p-4"
+    >
+      <h3 className="text-sm font-semibold">Capacity & Occupancy</h3>
+      <p className="mt-1 text-xs text-gray-500">
+        Keep occupied places at or below total capacity.
+      </p>
+
+      <div className="mt-4 grid grid-cols-2 gap-3">
+        <label className="text-xs text-gray-400">
+          Total capacity
+          <input
+            type="number"
+            min="0"
+            step="1"
+            required
+            value={capacityInput}
+            onChange={(event) => {
+              setCapacityInput(event.target.value);
+              setError("");
+              setSaved(false);
+            }}
+            className="mt-1 w-full rounded-lg border border-white/10 bg-[#070B14] px-3 py-2 text-sm text-white outline-none focus:border-cyan-500/50"
+          />
+        </label>
+        <label className="text-xs text-gray-400">
+          Occupied places
+          <input
+            type="number"
+            min="0"
+            step="1"
+            required
+            value={occupiedInput}
+            onChange={(event) => {
+              setOccupiedInput(event.target.value);
+              setError("");
+              setSaved(false);
+            }}
+            className="mt-1 w-full rounded-lg border border-white/10 bg-[#070B14] px-3 py-2 text-sm text-white outline-none focus:border-cyan-500/50"
+          />
+        </label>
+      </div>
+
+      <p className="mt-3 text-xs text-cyan-300">
+        Available places:{" "}
+        {Math.max(
+          0,
+          (Number(capacityInput) || 0) - (Number(occupiedInput) || 0)
+        ).toLocaleString()}
+      </p>
+
+      {error && (
+        <p role="alert" className="mt-2 text-xs text-red-300">
+          {error}
+        </p>
+      )}
+      {saved && (
+        <p role="status" className="mt-2 text-xs text-emerald-300">
+          Capacity and occupancy saved on this device.
+        </p>
+      )}
+
+      <button
+        type="submit"
+        className="mt-4 w-full rounded-lg border border-cyan-500/30 bg-cyan-500/10 py-2.5 text-xs font-semibold text-cyan-300 hover:bg-cyan-500/20 focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
+      >
+        SAVE CAPACITY
+      </button>
+    </form>
   );
 }
 

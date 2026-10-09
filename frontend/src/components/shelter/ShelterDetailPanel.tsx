@@ -18,7 +18,7 @@ function ShelterDetailPanel({
     shelter.occupied;
 
   return (
-    <div className="fixed right-0 top-0 h-screen w-[380px] bg-[#0B1220] border-l border-white/10 z-[2000] shadow-2xl p-6 overflow-y-auto">
+    <div className="fixed right-0 top-0 z-[2000] h-dvh w-full max-w-[380px] overflow-y-auto border-l border-white/10 bg-[#0B1220] p-5 shadow-2xl sm:p-6">
 
       <div className="flex items-center justify-between">
 

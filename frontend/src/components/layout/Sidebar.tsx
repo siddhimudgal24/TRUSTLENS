@@ -1,5 +1,6 @@
 import {
   Activity,
+  AlertTriangle,
   BellRing,
   BarChart3,
   Building2,
@@ -16,6 +17,7 @@ import { NavLink, Link } from "react-router-dom";
 
 const menuItems = [
   { name: "Dashboard", icon: LayoutDashboard, path: "/" },
+  { name: "Disasters", icon: AlertTriangle, path: "/disasters" },
   { name: "Live Map", icon: Map, path: "/map" },
   { name: "Shelters", icon: Building2, path: "/shelters" },
   { name: "Inspection", icon: ScanSearch, path: "/inspection" },

@@ -1,17 +1,49 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import PageHeader from "../components/layout/PageHeader";
 
 function Inspection() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisComplete, setAnalysisComplete] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
+  useEffect(
+    () => () => {
+      if (selectedImage) URL.revokeObjectURL(selectedImage);
+    },
+    [selectedImage]
+  );
+
+  useEffect(() => {
+    if (!isAnalyzing) return;
+
+    const timeoutId = window.setTimeout(() => {
+      setIsAnalyzing(false);
+      setAnalysisComplete(true);
+    }, 2000);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [isAnalyzing]);
 
   const handleImageUpload = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = event.target.files?.[0];
+    event.target.value = "";
 
     if (!file) return;
 
+    if (!file.type.startsWith("image/")) {
+      setUploadError("Choose an image file to continue.");
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      setUploadError("The image must be 10 MB or smaller.");
+      return;
+    }
+
+    setUploadError(null);
     const imageUrl = URL.createObjectURL(file);
 
     setSelectedImage(imageUrl);
@@ -19,133 +51,43 @@ function Inspection() {
   };
 
   const runInspection = () => {
-    if (!selectedImage) return;
+    if (!selectedImage || isAnalyzing) return;
 
-    setIsAnalyzing(true);
     setAnalysisComplete(false);
-
-    setTimeout(() => {
-      setIsAnalyzing(false);
-      setAnalysisComplete(true);
-    }, 2000);
+    setIsAnalyzing(true);
   };
 
   return (
-    <div className="min-h-screen bg-[#070B14] text-white p-6">
+    <div className="space-y-6 text-white">
+      <PageHeader
+        eyebrow="AI damage assessment"
+        title="AI Inspection"
+        description="Analyze shelter and infrastructure conditions using AI-assisted visual inspection."
+        status={
+          <div className="rounded-lg border border-blue-100 bg-blue-50 px-4 py-2 text-[10px] font-semibold text-blue-700">
 
-      {/* HEADER */}
-      <div className="flex items-center justify-between mb-8">
+            DEMO ASSESSMENT
 
-        <div>
-          <p className="text-xs uppercase tracking-[0.25em] text-cyan-400 mb-2">
-            SHELTERX / AI DAMAGE ASSESSMENT
-          </p>
+          </div>
+        }
+      />
 
-          <h1 className="text-3xl font-bold">
-            AI Inspection
-          </h1>
-
-          <p className="text-sm text-gray-400 mt-2">
-            Analyze shelter and infrastructure conditions using AI-assisted
-            visual inspection.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2 border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 rounded-lg">
-
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-
-          <span className="text-xs font-semibold text-emerald-400">
-            AI ENGINE ONLINE
-          </span>
-
-        </div>
-
-      </div>
+      <p className="rounded-md border border-blue-100 bg-blue-50 px-3 py-2 text-[10px] text-blue-800">
+        This page demonstrates an assessment workflow; no image-analysis service is connected.
+        Outputs are illustrative only. Human verification is required.
+      </p>
 
 
       {/* TOP STATS */}
 
-      <div className="grid grid-cols-4 gap-4 mb-6">
-
-        <div className="bg-[#0D1320] border border-white/10 rounded-xl p-5">
-
-          <p className="text-xs text-gray-500 uppercase tracking-wider">
-            Inspections
-          </p>
-
-          <p className="text-3xl font-bold mt-2">
-            24
-          </p>
-
-          <p className="text-xs text-gray-500 mt-2">
-            Completed today
-          </p>
-
-        </div>
-
-
-        <div className="bg-[#0D1320] border border-white/10 rounded-xl p-5">
-
-          <p className="text-xs text-gray-500 uppercase tracking-wider">
-            Critical Findings
-          </p>
-
-          <p className="text-3xl font-bold mt-2 text-red-400">
-            3
-          </p>
-
-          <p className="text-xs text-gray-500 mt-2">
-            Require immediate action
-          </p>
-
-        </div>
-
-
-        <div className="bg-[#0D1320] border border-white/10 rounded-xl p-5">
-
-          <p className="text-xs text-gray-500 uppercase tracking-wider">
-            AI Accuracy
-          </p>
-
-          <p className="text-3xl font-bold mt-2 text-cyan-400">
-            94%
-          </p>
-
-          <p className="text-xs text-gray-500 mt-2">
-            Model confidence
-          </p>
-
-        </div>
-
-
-        <div className="bg-[#0D1320] border border-white/10 rounded-xl p-5">
-
-          <p className="text-xs text-gray-500 uppercase tracking-wider">
-            Response Time
-          </p>
-
-          <p className="text-3xl font-bold mt-2 text-emerald-400">
-            1.8s
-          </p>
-
-          <p className="text-xs text-gray-500 mt-2">
-            Average analysis
-          </p>
-
-        </div>
-
-      </div>
-
-
       {/* MAIN GRID */}
 
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
 
 
         {/* UPLOAD / IMAGE */}
 
-        <div className="col-span-2 bg-[#0D1320] border border-white/10 rounded-xl p-6">
+        <div className="rounded-xl border border-white/10 bg-[#0D1320] p-4 sm:p-6 xl:col-span-2">
 
           <div className="flex items-center justify-between mb-5">
 
@@ -170,14 +112,14 @@ function Inspection() {
 
           {/* IMAGE AREA */}
 
-          <div className="border border-dashed border-white/15 rounded-xl min-h-[360px] flex items-center justify-center overflow-hidden bg-[#070B14]">
+          <div className="flex min-h-[280px] items-center justify-center overflow-hidden rounded-xl border border-dashed border-white/15 bg-[#070B14] sm:min-h-[360px]">
 
             {selectedImage ? (
 
               <img
                 src={selectedImage}
                 alt="Inspection"
-                className="w-full h-[360px] object-cover"
+                className="h-[280px] w-full object-cover sm:h-[360px]"
               />
 
             ) : (
@@ -205,6 +147,7 @@ function Inspection() {
                     accept="image/*"
                     onChange={handleImageUpload}
                     className="hidden"
+                    aria-label="Select inspection image"
                   />
 
                 </label>
@@ -215,6 +158,11 @@ function Inspection() {
 
           </div>
 
+          {uploadError && (
+            <p role="alert" className="mt-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+              {uploadError}
+            </p>
+          )}
 
           {/* ACTION BUTTON */}
 
@@ -229,6 +177,7 @@ function Inspection() {
                 accept="image/*"
                 onChange={handleImageUpload}
                 className="hidden"
+                aria-label="Change inspection image"
               />
 
             </label>
@@ -237,6 +186,7 @@ function Inspection() {
             <button
               onClick={runInspection}
               disabled={!selectedImage || isAnalyzing}
+              aria-busy={isAnalyzing}
               className={`flex-1 py-3 rounded-lg text-xs font-semibold transition ${
                 !selectedImage
                   ? "bg-white/5 text-gray-600 cursor-not-allowed"
@@ -246,7 +196,7 @@ function Inspection() {
 
               {isAnalyzing
                 ? "ANALYZING..."
-                : "RUN AI INSPECTION"}
+                : "                RUN DEMO ASSESSMENT"}
 
             </button>
 
@@ -257,18 +207,18 @@ function Inspection() {
 
         {/* AI RESULT PANEL */}
 
-        <div className="bg-[#0D1320] border border-white/10 rounded-xl p-6">
+        <div className="rounded-xl border border-white/10 bg-[#0D1320] p-4 sm:p-6">
 
           <div className="flex items-center justify-between mb-6">
 
             <div>
 
               <p className="text-xs text-gray-500 uppercase">
-                AI Assessment
+                Demo Assessment
               </p>
 
               <h2 className="text-lg font-semibold mt-1">
-                Inspection Result
+                Sample Result
               </h2>
 
             </div>
@@ -295,7 +245,7 @@ function Inspection() {
               </p>
 
               <p className="text-xs text-gray-600 mt-2">
-                Upload an image and run AI analysis.
+                Upload an image to preview the local assessment demonstration.
               </p>
 
             </div>
@@ -305,16 +255,16 @@ function Inspection() {
 
           {isAnalyzing && (
 
-            <div className="text-center py-16">
+            <div aria-live="polite" className="text-center py-16">
 
               <div className="w-12 h-12 border-2 border-cyan-400/30 border-t-cyan-400 rounded-full animate-spin mx-auto" />
 
               <p className="text-sm text-cyan-400 mt-5">
-                AI analyzing image...
+                Running demo assessment...
               </p>
 
               <p className="text-xs text-gray-500 mt-2">
-                Detecting structural damage and hazards
+                Preparing the illustrative result
               </p>
 
             </div>
@@ -326,6 +276,9 @@ function Inspection() {
 
             <div className="space-y-5">
 
+              <p role="status" className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-[10px] text-amber-800">
+                Illustrative demo output. It is not generated by an AI service.
+              </p>
 
               {/* SEVERITY */}
 
@@ -390,7 +343,7 @@ function Inspection() {
                 <div className="flex justify-between">
 
                   <span className="text-xs text-gray-400">
-                    AI Confidence
+                    Sample confidence score
                   </span>
 
                   <span className="text-sm font-bold text-emerald-400">
@@ -498,19 +451,19 @@ function Inspection() {
 
       {/* LOWER SECTION */}
 
-      <div className="grid grid-cols-2 gap-6 mt-6">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
 
 
         {/* RECOMMENDED ACTION */}
 
-        <div className="bg-[#0D1320] border border-white/10 rounded-xl p-6">
+        <div className="rounded-xl border border-white/10 bg-[#0D1320] p-4 sm:p-6">
 
           <p className="text-xs text-cyan-400 uppercase tracking-wider">
-            Decision Support
+            Human Verification
           </p>
 
           <h2 className="text-lg font-semibold mt-2">
-            Recommended Action
+            Field Review Guidance
           </h2>
 
 
@@ -525,13 +478,13 @@ function Inspection() {
               <div>
 
                 <p className="text-sm font-semibold">
-                  Schedule manual structural inspection
+                  Do not use this demonstration to assess safety
                 </p>
 
                 <p className="text-xs text-gray-500 mt-2 leading-5">
-                  AI assessment indicates moderate structural damage.
-                  The facility should be manually verified before being
-                  classified as fully operational.
+                  This prototype does not analyze the uploaded image. Any
+                  operational decision requires qualified field verification
+                  and the applicable response protocols.
                 </p>
 
               </div>
@@ -546,11 +499,11 @@ function Inspection() {
             <div className="bg-[#070B14] rounded-lg p-4">
 
               <p className="text-[10px] text-gray-500 uppercase">
-                Priority
+                Assessment mode
               </p>
 
-              <p className="text-sm font-bold text-orange-400 mt-2">
-                HIGH
+              <p className="text-sm font-bold text-blue-600 mt-2">
+                Demonstration only
               </p>
 
             </div>
@@ -559,11 +512,11 @@ function Inspection() {
             <div className="bg-[#070B14] rounded-lg p-4">
 
               <p className="text-[10px] text-gray-500 uppercase">
-                Response
+                Safety decisions
               </p>
 
               <p className="text-sm font-bold mt-2">
-                &lt; 2 HOURS
+                Human review
               </p>
 
             </div>
@@ -575,7 +528,7 @@ function Inspection() {
 
         {/* INSPECTION HISTORY */}
 
-        <div className="bg-[#0D1320] border border-white/10 rounded-xl p-6">
+        <div className="rounded-xl border border-white/10 bg-[#0D1320] p-4 sm:p-6">
 
           <div className="flex justify-between items-center">
 
@@ -591,103 +544,17 @@ function Inspection() {
 
             </div>
 
-            <button className="text-xs text-cyan-400">
-              VIEW ALL
-            </button>
+            <span className="rounded-full bg-slate-100 px-2 py-1 text-[9px] text-slate-500">
+              No saved records
+            </span>
 
           </div>
 
 
-          <div className="mt-5 space-y-3">
-
-
-            <div className="flex items-center justify-between border-b border-white/5 pb-3">
-
-              <div>
-
-                <p className="text-sm font-medium">
-                  Shelter A-102
-                </p>
-
-                <p className="text-[10px] text-gray-500 mt-1">
-                  Structural inspection
-                </p>
-
-              </div>
-
-              <div className="text-right">
-
-                <p className="text-xs text-emerald-400">
-                  SAFE
-                </p>
-
-                <p className="text-[10px] text-gray-600 mt-1">
-                  12 min ago
-                </p>
-
-              </div>
-
-            </div>
-
-
-            <div className="flex items-center justify-between border-b border-white/5 pb-3">
-
-              <div>
-
-                <p className="text-sm font-medium">
-                  Shelter B-204
-                </p>
-
-                <p className="text-[10px] text-gray-500 mt-1">
-                  Damage assessment
-                </p>
-
-              </div>
-
-              <div className="text-right">
-
-                <p className="text-xs text-orange-400">
-                  MODERATE
-                </p>
-
-                <p className="text-[10px] text-gray-600 mt-1">
-                  27 min ago
-                </p>
-
-              </div>
-
-            </div>
-
-
-            <div className="flex items-center justify-between">
-
-              <div>
-
-                <p className="text-sm font-medium">
-                  Shelter C-301
-                </p>
-
-                <p className="text-[10px] text-gray-500 mt-1">
-                  Infrastructure check
-                </p>
-
-              </div>
-
-              <div className="text-right">
-
-                <p className="text-xs text-red-400">
-                  CRITICAL
-                </p>
-
-                <p className="text-[10px] text-gray-600 mt-1">
-                  41 min ago
-                </p>
-
-              </div>
-
-            </div>
-
-
+          <div className="mt-5 flex min-h-32 items-center justify-center rounded-md bg-white px-4 text-center">
+            <p className="max-w-xs text-xs leading-5 text-slate-500">
+              Inspection history is not saved in this version.
+            </p>
           </div>
 
         </div>
@@ -700,13 +567,13 @@ function Inspection() {
       <div className="mt-6 border border-cyan-500/10 bg-cyan-500/5 rounded-xl p-4">
 
         <p className="text-[10px] text-cyan-400 font-semibold uppercase">
-          SHELTERX AI DECISION SUPPORT
+        TRUSTLENS INSPECTION DEMONSTRATION
         </p>
 
         <p className="text-[10px] text-gray-500 mt-2 leading-5">
-          AI-generated inspection results are intended to support emergency
-          response teams and prioritize field verification. They do not
-          replace certified structural or safety inspections.
+          This local workflow does not analyze uploaded images with an AI service.
+          Its illustrative results must not be used to assess or certify structural
+          safety; qualified human inspection is required.
         </p>
 
       </div>

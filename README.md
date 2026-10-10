@@ -62,39 +62,9 @@ The repository currently has two Java web execution paths:
 1. **Standalone API runner:** `ServerRunner` starts the JDK embedded HTTP server on port `8080` and registers handlers for the `/api/*` authentication routes. The Vite development server proxies `/api` requests to this server.
 2. **Servlet/JSP WAR:** `backend/pom.xml` packages a WAR containing servlet classes, JSP pages, and `web.xml`, intended for a compatible servlet container such as Tomcat 9. The standalone `HttpServer` does not itself execute the Servlet/JSP application.
 
-```mermaid
-flowchart LR
-    Operator["Operator"]
-    subgraph Browser["Browser"]
-        React["React + TypeScript<br/>Vite frontend"]
-        Pages["Dashboard, map, shelters,<br/>auth, analytics, planning"]
-        State["Zustand state"]
-        Fixtures["Local sample data"]
-        React --> Pages
-        Pages <--> State
-        Pages --> Fixtures
-    end
-    subgraph API["Standalone backend API — port 8080"]
-        Http["JDK HttpServer"]
-        Handlers["Login / register / OTP /<br/>password-reset handlers"]
-        DAO["DAO layer"]
-        Http --> Handlers --> DAO
-    end
-    subgraph WebApp["Separate Java WAR"]
-        Servlet["Java Servlets"]
-        JSP["JSP + JSTL pages"]
-        Servlet --> JSP
-    end
-    DB[("MySQL — trustlens_db")]
-    SMTP["SMTP server"]
-    Mail["javax.mail"]
-    Maven["Apache Maven<br/>WAR packaging"]
-    Operator --> React
-    Pages -->|"Vite /api proxy in development"| Http
-    DAO --> DB
-    Handlers --> Mail --> SMTP
-    Maven -. "builds" .-> WebApp
-```
+![TRUSTLENS project architecture](docs/architecture.svg)
+
+The diagram distinguishes the Vite/React client, the standalone authentication API and its MySQL/email integrations, and the separately packaged Servlet/JSP WAR.
 
 ### Backend request lifecycle
 

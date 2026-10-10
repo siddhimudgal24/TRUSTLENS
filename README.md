@@ -7,6 +7,7 @@ TRUSTLENS is a shelter-readiness and emergency-response planning application. It
 ## Contents
 
 - [Features](#features)
+- [Project documentation](#project-documentation)
 - [Screenshots](#screenshots)
 - [Technology stack](#technology-stack)
 - [Architecture](#architecture)
@@ -29,9 +30,13 @@ TRUSTLENS is a shelter-readiness and emergency-response planning application. It
 - Java API handlers for login, registration, sending/verifying OTPs, and resetting passwords.
 - MySQL schema for users and roles, disasters, affected populations, shelters, readiness, allocations, reallocations, and emergency alerts.
 
+## Project documentation
+
+- [Software Requirements Specification (SRS)](https://docs.google.com/document/d/1uPn_KZUK3aUiKjORcSqzqdFS9UpFF6Mq/edit)
+
 ## Screenshots
 
-![TRUSTLENS disaster management dashboard](frontend/public/SHELTERX%20Disaster%20Management%20Dashboard.png)
+![TRUSTLENS disaster management dashboard](frontend/public/trustlens-dashboard.png)
 
 ## Technology stack
 

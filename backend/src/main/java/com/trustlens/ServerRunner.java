@@ -16,6 +16,7 @@ import com.trustlens.model.Disaster;
 import com.trustlens.model.AffectedZone;
 import com.trustlens.model.AffectedPopulation;
 import com.trustlens.util.EmailUtil;
+import com.trustlens.util.DotenvUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -34,15 +35,25 @@ import java.util.Random;
 
 public class ServerRunner {
 
-    private static final int PORT = 8080;
+    private static int getPort() {
+        String portStr = DotenvUtil.get("PORT", "8080");
+        try {
+            return Integer.parseInt(portStr.trim());
+        } catch (Exception e) {
+            return 8080;
+        }
+    }
+
+    private static final int PORT = getPort();
     private static final UserDAO userDAO = new UserDAOImpl();
     private static final OtpDAO otpDAO = new OtpDAOImpl();
     private static final DisasterDAO disasterDAO = new DisasterDAOImpl();
     private static final Gson gson = new Gson();
 
     public static void main(String[] args) throws IOException {
+        int port = getPort();
         System.out.println("=================================================");
-        System.out.println("Starting TrustLens Java Backend Server on port " + PORT + "...");
+        System.out.println("Starting TrustLens Java Backend Server on port " + port + "...");
         
         // Verify DB Connection on startup
         try (Connection conn = DBConnection.getConnection()) {
@@ -53,7 +64,7 @@ public class ServerRunner {
             System.err.println("❌ MySQL Connection Error: " + e.getMessage());
         }
 
-        HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
+        HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
 
         // CORS & Module Endpoints
         server.createContext("/api/login", new LoginHandler());

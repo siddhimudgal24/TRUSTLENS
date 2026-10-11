@@ -48,6 +48,13 @@
             <version>8.3.0</version>
         </dependency>
 
+        <!-- PostgreSQL JDBC Driver -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.2</version>
+        </dependency>
+
         <!-- Password Hashing (jBCrypt) -->
         <dependency>
             <groupId>org.mindrot</groupId>

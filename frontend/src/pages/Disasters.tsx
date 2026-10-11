@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { AlertTriangle, Plus, Shield, MapPin, Users, Activity, CheckCircle2, AlertCircle, Trash2, Calendar, Radio } from "lucide-react";
+import { AlertTriangle, Plus, MapPin, Users, Activity, CheckCircle2, AlertCircle, Radio } from "lucide-react";
 
 interface DisasterItem {
   disasterId: number;

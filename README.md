@@ -1,4 +1,5 @@
 # TRUSTLENS
+-[Live Demo](https://trustlens-system.vercel.app/)
 
 TRUSTLENS is a shelter-readiness and emergency-response planning application. It combines a React dashboard and map-based planning demonstrations with a Java authentication backend, email OTP flows, and a MySQL data model for disaster and shelter operations.
 

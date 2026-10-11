@@ -225,6 +225,7 @@ public class ServerRunner {
                     new Thread(() -> EmailUtil.sendOtpEmail(email, otpCode)).start();
                     json.addProperty("success", true);
                     json.addProperty("message", "OTP sent successfully to " + email);
+                    json.addProperty("otpCode", otpCode);
                 } else {
                     json.addProperty("success", false);
                     json.addProperty("message", "Failed to save OTP");
@@ -292,6 +293,7 @@ public class ServerRunner {
                 new Thread(() -> EmailUtil.sendOtpEmail(email, otpCode)).start();
                 json.addProperty("success", true);
                 json.addProperty("message", "Recovery OTP sent to " + email);
+                json.addProperty("otpCode", otpCode);
             }
 
             byte[] response = json.toString().getBytes(StandardCharsets.UTF_8);

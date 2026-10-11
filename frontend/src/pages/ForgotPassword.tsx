@@ -13,7 +13,8 @@ export default function ForgotPassword() {
 
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !email.includes("@")) {
+    const cleanEmail = email.trim();
+    if (!cleanEmail || !cleanEmail.includes("@")) {
       setMessage({ type: "error", text: "Please enter a valid email address." });
       return;
     }
@@ -22,21 +23,21 @@ export default function ForgotPassword() {
     setMessage(null);
 
     try {
-      const res = await fetch(`/api/forgot-password?email=${encodeURIComponent(email)}`, {
+      const res = await fetch(`/api/forgot-password?email=${encodeURIComponent(cleanEmail)}`, {
         method: "POST",
       });
       const data = await res.json();
       if (data.success) {
         setStep(2);
         setOtpCode("");
-        setMessage({ type: "success", text: `Reset code sent to ${email}. Please check your email inbox.` });
+        setMessage({ type: "success", text: `Reset code sent to ${cleanEmail}. Please check your email inbox.` });
       } else {
         setMessage({ type: "error", text: data.message || "Failed to process forgot password request." });
       }
     } catch {
       // Demo fallback
       setStep(2);
-      setMessage({ type: "success", text: `[Demo] Reset code (123456) sent to ${email}` });
+      setMessage({ type: "success", text: `[Demo] Reset code (123456) sent to ${cleanEmail}` });
     } finally {
       setLoading(false);
     }
@@ -44,7 +45,9 @@ export default function ForgotPassword() {
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (otpCode.length !== 6 || newPassword.length < 6) {
+    const cleanOtp = otpCode.trim();
+    const cleanEmail = email.trim();
+    if (cleanOtp.length !== 6 || newPassword.length < 6) {
       setMessage({ type: "error", text: "Please provide a 6-digit OTP and password with at least 6 characters." });
       return;
     }
@@ -54,7 +57,7 @@ export default function ForgotPassword() {
 
     try {
       const res = await fetch(
-        `/api/reset-password?email=${encodeURIComponent(email)}&otp=${encodeURIComponent(otpCode)}&newPassword=${encodeURIComponent(newPassword)}`,
+        `/api/reset-password?email=${encodeURIComponent(cleanEmail)}&otp=${encodeURIComponent(cleanOtp)}&newPassword=${encodeURIComponent(newPassword)}`,
         { method: "POST" }
       );
       const data = await res.json();

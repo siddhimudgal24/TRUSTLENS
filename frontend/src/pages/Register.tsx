@@ -47,8 +47,10 @@ export default function Register() {
     setIsOtpSending(true);
     setMessage(null);
 
+    const cleanEmail = formData.email.trim();
+
     try {
-      const res = await fetch(`/api/send-otp?email=${encodeURIComponent(formData.email)}&purpose=REGISTRATION`, {
+      const res = await fetch(`/api/send-otp?email=${encodeURIComponent(cleanEmail)}&purpose=REGISTRATION`, {
         method: "POST",
       });
       const data = await res.json();
@@ -57,7 +59,7 @@ export default function Register() {
         setTimer(60);
         setCanResend(false);
         setOtpCode("");
-        setMessage({ type: "success", text: `Verification code sent to ${formData.email}. Please check your email inbox.` });
+        setMessage({ type: "success", text: `Verification code sent to ${cleanEmail}. Please check your email inbox.` });
       } else {
         setMessage({ type: "error", text: data.message || "Failed to send OTP." });
       }
@@ -66,14 +68,17 @@ export default function Register() {
       setShowOtpModal(true);
       setTimer(60);
       setCanResend(false);
-      setMessage({ type: "success", text: `[Demo] Simulated OTP code (123456) sent to ${formData.email}` });
+      setMessage({ type: "success", text: `[Demo] Simulated OTP code (123456) sent to ${cleanEmail}` });
     } finally {
       setIsOtpSending(false);
     }
   };
 
   const handleVerifyAndRegister = async () => {
-    if (otpCode.length !== 6) {
+    const cleanOtp = otpCode.trim();
+    const cleanEmail = formData.email.trim();
+
+    if (cleanOtp.length !== 6) {
       setMessage({ type: "error", text: "Please enter a valid 6-digit OTP code." });
       return;
     }
@@ -83,7 +88,7 @@ export default function Register() {
 
     try {
       // 1. Verify OTP
-      const otpRes = await fetch(`/api/verify-otp?email=${encodeURIComponent(formData.email)}&otp=${encodeURIComponent(otpCode)}&purpose=REGISTRATION`, {
+      const otpRes = await fetch(`/api/verify-otp?email=${encodeURIComponent(cleanEmail)}&otp=${encodeURIComponent(cleanOtp)}&purpose=REGISTRATION`, {
         method: "POST",
       });
       const otpData = await otpRes.json();
@@ -92,10 +97,10 @@ export default function Register() {
         setOtpVerified(true);
         // 2. Submit Registration to Java backend
         const params = new URLSearchParams();
-        params.append("fullName", formData.fullName);
-        params.append("username", formData.username);
-        params.append("email", formData.email);
-        params.append("phone", formData.phone);
+        params.append("fullName", formData.fullName.trim());
+        params.append("username", formData.username.trim());
+        params.append("email", cleanEmail);
+        params.append("phone", formData.phone.trim());
         params.append("roleId", formData.roleId);
         params.append("password", formData.password);
 

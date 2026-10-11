@@ -223,9 +223,13 @@ public class ServerRunner {
                 return;
             }
 
-            Map<String, String> query = parseQueryParams(exchange.getRequestURI().getQuery());
-            String email = query.get("email");
-            String purpose = query.getOrDefault("purpose", "REGISTRATION");
+            Map<String, String> params = parseQueryParams(exchange.getRequestURI().getQuery());
+            params.putAll(parseBody(exchange));
+
+            String email = params.get("email");
+            String purpose = params.getOrDefault("purpose", "REGISTRATION");
+            if (email != null) email = email.trim();
+            if (purpose != null) purpose = purpose.trim();
 
             JsonObject json = new JsonObject();
             if (email == null || !email.contains("@")) {
@@ -236,7 +240,8 @@ public class ServerRunner {
                 Timestamp expiresAt = new Timestamp(System.currentTimeMillis() + (10 * 60 * 1000));
                 boolean saved = otpDAO.saveOtp(new OtpVerification(email, otpCode, purpose, expiresAt));
                 if (saved) {
-                    new Thread(() -> EmailUtil.sendOtpEmail(email, otpCode)).start();
+                    final String targetEmail = email;
+                    new Thread(() -> EmailUtil.sendOtpEmail(targetEmail, otpCode)).start();
                     json.addProperty("success", true);
                     json.addProperty("message", "OTP sent successfully to " + email);
                 } else {
@@ -263,10 +268,18 @@ public class ServerRunner {
                 return;
             }
 
-            Map<String, String> query = parseQueryParams(exchange.getRequestURI().getQuery());
-            String email = query.get("email");
-            String otpCode = query.get("otp");
-            String purpose = query.getOrDefault("purpose", "REGISTRATION");
+            Map<String, String> params = parseQueryParams(exchange.getRequestURI().getQuery());
+            params.putAll(parseBody(exchange));
+
+            String email = params.get("email");
+            String otpCode = params.containsKey("otp") ? params.get("otp") : params.get("otpCode");
+            String purpose = params.getOrDefault("purpose", "REGISTRATION");
+
+            if (email != null) email = email.trim();
+            if (otpCode != null) otpCode = otpCode.trim();
+            if (purpose != null) purpose = purpose.trim();
+
+            System.out.println("Verifying OTP request for email=" + email + ", otp=" + otpCode + ", purpose=" + purpose);
 
             boolean isValid = otpDAO.verifyOtp(email, otpCode, purpose);
             JsonObject json = new JsonObject();
@@ -291,8 +304,12 @@ public class ServerRunner {
                 return;
             }
 
-            Map<String, String> query = parseQueryParams(exchange.getRequestURI().getQuery());
-            String email = query.get("email");
+            Map<String, String> params = parseQueryParams(exchange.getRequestURI().getQuery());
+            params.putAll(parseBody(exchange));
+
+            String email = params.get("email");
+            if (email != null) email = email.trim();
+
             JsonObject json = new JsonObject();
 
             User user = userDAO.getUserByEmail(email);
@@ -303,7 +320,8 @@ public class ServerRunner {
                 String otpCode = String.format("%06d", new Random().nextInt(900000) + 100000);
                 Timestamp expiresAt = new Timestamp(System.currentTimeMillis() + (10 * 60 * 1000));
                 otpDAO.saveOtp(new OtpVerification(email, otpCode, "PASSWORD_RESET", expiresAt));
-                new Thread(() -> EmailUtil.sendOtpEmail(email, otpCode)).start();
+                final String targetEmail = email;
+                new Thread(() -> EmailUtil.sendOtpEmail(targetEmail, otpCode)).start();
                 json.addProperty("success", true);
                 json.addProperty("message", "Recovery OTP sent to " + email);
             }
@@ -326,10 +344,15 @@ public class ServerRunner {
                 return;
             }
 
-            Map<String, String> query = parseQueryParams(exchange.getRequestURI().getQuery());
-            String email = query.get("email");
-            String otpCode = query.get("otp");
-            String newPassword = query.get("newPassword");
+            Map<String, String> params = parseQueryParams(exchange.getRequestURI().getQuery());
+            params.putAll(parseBody(exchange));
+
+            String email = params.get("email");
+            String otpCode = params.containsKey("otp") ? params.get("otp") : params.get("otpCode");
+            String newPassword = params.get("newPassword");
+
+            if (email != null) email = email.trim();
+            if (otpCode != null) otpCode = otpCode.trim();
 
             JsonObject json = new JsonObject();
             boolean isValidOtp = otpDAO.verifyOtp(email, otpCode, "PASSWORD_RESET");

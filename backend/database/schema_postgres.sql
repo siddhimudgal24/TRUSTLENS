@@ -40,9 +40,9 @@ CREATE TABLE otp_verifications (
     email VARCHAR(100) NOT NULL,
     otp_code VARCHAR(10) NOT NULL,
     purpose VARCHAR(30) NOT NULL,
-    expires_at TIMESTAMP NOT NULL,
+    expires_at TIMESTAMPTZ NOT NULL,
     is_used BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
 -- ========================================================

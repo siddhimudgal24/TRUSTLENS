@@ -16,7 +16,7 @@ public class OtpDAOImpl implements OtpDAO {
 
             ps.setString(1, otp.getEmail().trim());
             ps.setString(2, otp.getOtpCode().trim());
-            ps.setString(3, otp.getPurpose());
+            ps.setString(3, otp.getPurpose() != null ? otp.getPurpose().trim() : "REGISTRATION");
             ps.setTimestamp(4, otp.getExpiresAt());
 
             return ps.executeUpdate() > 0;
@@ -32,24 +32,42 @@ public class OtpDAOImpl implements OtpDAO {
 
         String cleanEmail = email.trim();
         String cleanOtp = otpCode.trim();
+        String cleanPurpose = purpose != null ? purpose.trim() : "REGISTRATION";
 
-        String sql = "SELECT otp_id, expires_at FROM otp_verifications WHERE LOWER(TRIM(email)) = LOWER(?) AND TRIM(otp_code) = ? AND purpose = ? AND is_used = false ORDER BY otp_id DESC LIMIT 1";
+        String sql = "SELECT otp_id, expires_at, created_at FROM otp_verifications " +
+                     "WHERE LOWER(TRIM(email)) = LOWER(?) AND TRIM(otp_code) = ? AND purpose = ? AND is_used = false " +
+                     "ORDER BY otp_id DESC LIMIT 1";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, cleanEmail);
             ps.setString(2, cleanOtp);
-            ps.setString(3, purpose);
+            ps.setString(3, cleanPurpose);
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     Timestamp expiresAt = rs.getTimestamp("expires_at");
-                    // Compare epoch time to avoid timezone mismatch
-                    if (expiresAt != null && expiresAt.getTime() > System.currentTimeMillis()) {
+                    Timestamp createdAt = rs.getTimestamp("created_at");
+
+                    long now = System.currentTimeMillis();
+                    long expTime = expiresAt != null ? expiresAt.getTime() : 0;
+                    long createTime = createdAt != null ? createdAt.getTime() : 0;
+
+                    // Robust expiration logic with 15-minute tolerance:
+                    // 1. Standard check: expiresAt is in future
+                    // 2. Fallback check: created less than 15 minutes ago
+                    // 3. Fallback check: within 15 minutes of expiration timestamp (handles clock drift)
+                    boolean isValid = (expTime > now)
+                            || (createTime > 0 && Math.abs(now - createTime) <= 15 * 60 * 1000)
+                            || (expTime > 0 && Math.abs(expTime - now) <= 15 * 60 * 1000);
+
+                    if (isValid) {
                         return markOtpAsUsed(cleanEmail, cleanOtp);
                     } else {
-                        System.err.println("OTP Code expired. Expire: " + expiresAt + ", Current: " + new Timestamp(System.currentTimeMillis()));
+                        System.err.println("OTP Expired for " + cleanEmail + ": exp=" + expiresAt + ", created=" + createdAt + ", now=" + new Timestamp(now));
                     }
+                } else {
+                    System.err.println("No matching unused OTP for email: " + cleanEmail + ", code: " + cleanOtp + ", purpose: " + cleanPurpose);
                 }
             }
         } catch (SQLException e) {

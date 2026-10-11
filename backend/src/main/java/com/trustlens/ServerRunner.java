@@ -113,7 +113,21 @@ public class ServerRunner {
 
     private static Map<String, String> parseBody(HttpExchange exchange) throws IOException {
         InputStream is = exchange.getRequestBody();
-        String body = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+        String body = new String(is.readAllBytes(), StandardCharsets.UTF_8).trim();
+        Map<String, String> map = new HashMap<>();
+        if (body.isEmpty()) return map;
+
+        if (body.startsWith("{")) {
+            try {
+                JsonObject obj = gson.fromJson(body, JsonObject.class);
+                for (String key : obj.keySet()) {
+                    if (!obj.get(key).isJsonNull()) {
+                        map.put(key, obj.get(key).getAsString());
+                    }
+                }
+                return map;
+            } catch (Exception ignored) {}
+        }
         return parseQueryParams(body);
     }
 

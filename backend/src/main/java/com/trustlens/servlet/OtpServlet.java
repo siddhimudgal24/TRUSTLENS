@@ -140,7 +140,7 @@ public class OtpServlet extends HttpServlet {
         boolean saved = otpDAO.saveOtp(otpObj);
 
         if (saved) {
-            boolean emailSent = EmailUtil.sendOtpEmail(email, otpCode);
+            new Thread(() -> EmailUtil.sendOtpEmail(email, otpCode)).start();
             jsonResponse.addProperty("success", true);
             jsonResponse.addProperty("message", "OTP sent successfully to " + email);
         } else {

@@ -23,7 +23,7 @@ export default function Register() {
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setInterval>;
     if (showOtpModal && timer > 0) {
       interval = setInterval(() => {
         setTimer((prev) => prev - 1);

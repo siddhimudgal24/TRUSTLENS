@@ -8,22 +8,34 @@ import java.sql.SQLException;
 
 public class DBConnection {
 
-    private static final String URL = DotenvUtil.get("DB_URL", "jdbc:mysql://localhost:3306/trustlens_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Kolkata");
-    private static final String USER = DotenvUtil.get("DB_USER", "root");
-    private static final String PASSWORD = DotenvUtil.get("DB_PASSWORD", "Shorya@11@sql");
-    private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
+    private static String getUrl() {
+        return DotenvUtil.get("DB_URL", "jdbc:mysql://localhost:3306/trustlens_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Kolkata");
+    }
+
+    private static String getUser() {
+        return DotenvUtil.get("DB_USER", "root");
+    }
+
+    private static String getPassword() {
+        return DotenvUtil.get("DB_PASSWORD", "Shorya@11@sql");
+    }
 
     static {
         try {
-            Class.forName(DRIVER);
-        } catch (ClassNotFoundException e) {
-            System.err.println("MySQL JDBC Driver Not Found in Classpath!");
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+            } catch (ClassNotFoundException ignored) {}
+
+            try {
+                Class.forName("org.postgresql.Driver");
+            } catch (ClassNotFoundException ignored) {}
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, USER, PASSWORD);
+        return DriverManager.getConnection(getUrl(), getUser(), getPassword());
     }
 
     public static void closeConnection(Connection conn) {

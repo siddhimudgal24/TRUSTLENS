@@ -20,6 +20,7 @@ const Inspection = lazy(() => import("./pages/Inspection"));
 const Allocation = lazy(() => import("./pages/Allocation"));
 const Scenarios = lazy(() => import("./pages/Scenarios"));
 const Analytics = lazy(() => import("./pages/Analytics"));
+const Disasters = lazy(() => import("./pages/Disasters"));
 const Readiness = lazy(() => import("./pages/Readiness"));
 const EmergencyAlerts = lazy(() => import("./pages/EmergencyAlerts"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -53,6 +54,7 @@ function App() {
                 >
                   <Routes>
                     <Route path="/" element={<Dashboard />} />
+                    <Route path="/disasters" element={<Disasters />} />
                     <Route path="/map" element={<LiveMap />} />
                     <Route path="/shelters" element={<Shelters />} />
                     <Route path="/inspection" element={<Inspection />} />

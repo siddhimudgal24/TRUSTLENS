@@ -56,7 +56,12 @@ export default function Register() {
         setShowOtpModal(true);
         setTimer(60);
         setCanResend(false);
-        setMessage({ type: "success", text: `OTP sent to ${formData.email}` });
+        if (data.demoOtp) {
+          setOtpCode(data.demoOtp);
+          setMessage({ type: "success", text: `OTP sent! Verification Code: ${data.demoOtp}` });
+        } else {
+          setMessage({ type: "success", text: `OTP sent to ${formData.email}` });
+        }
       } else {
         setMessage({ type: "error", text: data.message || "Failed to send OTP." });
       }

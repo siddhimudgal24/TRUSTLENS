@@ -8,18 +8,27 @@ import java.util.Properties;
 public class EmailUtil {
 
     private static final String SMTP_HOST = DotenvUtil.get("SMTP_HOST", "smtp.gmail.com");
-    private static final String SMTP_PORT = DotenvUtil.get("SMTP_PORT", "587");
-    private static final String SMTP_USER = DotenvUtil.get("SMTP_USER", "your-email@gmail.com");
-    private static final String SMTP_PASS = DotenvUtil.get("SMTP_PASS", "your-app-password");
+    private static final String SMTP_PORT = DotenvUtil.get("SMTP_PORT", "465");
+    private static final String SMTP_USER = DotenvUtil.get("SMTP_USER", "shoryaprataprathore28@gmail.com");
+    private static final String SMTP_PASS = DotenvUtil.get("SMTP_PASS", "jmbteuwgkitqdeab");
 
     public static boolean sendOtpEmail(String recipientEmail, String otpCode) {
         Properties props = new Properties();
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.ssl.protocols", "TLSv1.2");
-        props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
         props.put("mail.smtp.host", SMTP_HOST);
         props.put("mail.smtp.port", SMTP_PORT);
+        props.put("mail.smtp.auth", "true");
+        if ("465".equals(SMTP_PORT)) {
+            props.put("mail.smtp.ssl.enable", "true");
+            props.put("mail.smtp.socketFactory.port", "465");
+            props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+            props.put("mail.smtp.socketFactory.fallback", "false");
+        } else {
+            props.put("mail.smtp.starttls.enable", "true");
+        }
+        props.put("mail.smtp.ssl.protocols", "TLSv1.2");
+        props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
+        props.put("mail.smtp.connectiontimeout", "8000");
+        props.put("mail.smtp.timeout", "8000");
 
         Session session = Session.getInstance(props, new Authenticator() {
             @Override

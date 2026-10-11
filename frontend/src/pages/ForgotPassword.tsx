@@ -28,12 +28,8 @@ export default function ForgotPassword() {
       const data = await res.json();
       if (data.success) {
         setStep(2);
-        if (data.otpCode) {
-          setOtpCode(data.otpCode);
-          setMessage({ type: "success", text: `Reset Code: ${data.otpCode} (Sent to ${email})` });
-        } else {
-          setMessage({ type: "success", text: `Reset code sent to ${email}` });
-        }
+        setOtpCode("");
+        setMessage({ type: "success", text: `Reset code sent to ${email}. Please check your email inbox.` });
       } else {
         setMessage({ type: "error", text: data.message || "Failed to process forgot password request." });
       }

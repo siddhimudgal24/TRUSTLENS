@@ -16,6 +16,8 @@ import java.util.Properties;
 
 public class EmailUtil {
 
+    private static final String BREVO_API_KEY = DotenvUtil.get("BREVO_API_KEY", null);
+    private static final String BREVO_SENDER = DotenvUtil.get("BREVO_SENDER", "shoryaprataprathore28@gmail.com");
     private static final String RESEND_API_KEY = DotenvUtil.get("RESEND_API_KEY", null);
     private static final String SMTP_HOST = DotenvUtil.get("SMTP_HOST", "smtp.gmail.com");
     private static final String SMTP_PORT = DotenvUtil.get("SMTP_PORT", "465");
@@ -25,17 +27,68 @@ public class EmailUtil {
     public static boolean sendOtpEmail(String recipientEmail, String otpCode) {
         String htmlContent = buildEmailTemplate(otpCode);
 
-        // 1. Primary Method: Resend HTTPS API (Port 443 - Never blocked by Render or Cloud hosts)
+        // 1. Primary Method: Brevo HTTPS API (Port 443 - Sends to ANY recipient without domain restriction)
+        if (BREVO_API_KEY != null && !BREVO_API_KEY.trim().isEmpty()) {
+            boolean brevoSuccess = sendViaBrevo(recipientEmail, otpCode, htmlContent);
+            if (brevoSuccess) {
+                return true;
+            }
+            System.out.println("Notice: Brevo attempt did not succeed, trying next available provider...");
+        }
+
+        // 2. Secondary Method: Resend HTTPS API (Port 443)
         if (RESEND_API_KEY != null && RESEND_API_KEY.startsWith("re_")) {
             boolean resendSuccess = sendViaResend(recipientEmail, otpCode, htmlContent);
             if (resendSuccess) {
                 return true;
             }
-            System.out.println("Notice: Resend API attempt did not complete, falling back to direct SMTP...");
+            System.out.println("Notice: Resend API attempt did not succeed, falling back to direct SMTP...");
         }
 
-        // 2. Fallback Method: Direct JavaMail SMTP (Works on localhost or environments where SMTP is open)
+        // 3. Fallback Method: Direct JavaMail SMTP (Works on localhost or environments where SMTP is open)
         return sendViaSmtp(recipientEmail, otpCode, htmlContent);
+    }
+
+    private static boolean sendViaBrevo(String recipientEmail, String otpCode, String htmlContent) {
+        try {
+            JsonObject payload = new JsonObject();
+            JsonObject sender = new JsonObject();
+            sender.addProperty("name", "TrustLens Security");
+            sender.addProperty("email", BREVO_SENDER);
+            payload.add("sender", sender);
+
+            JsonArray toList = new JsonArray();
+            JsonObject toRecipient = new JsonObject();
+            toRecipient.addProperty("email", recipientEmail.trim());
+            toList.add(toRecipient);
+            payload.add("to", toList);
+
+            payload.addProperty("subject", "🔒 TrustLens Verification Code: " + otpCode);
+            payload.addProperty("htmlContent", htmlContent);
+
+            HttpClient client = HttpClient.newBuilder()
+                    .connectTimeout(Duration.ofSeconds(10))
+                    .build();
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://api.brevo.com/v3/smtp/email"))
+                    .header("api-key", BREVO_API_KEY.trim())
+                    .header("Content-Type", "application/json")
+                    .header("Accept", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(payload.toString(), StandardCharsets.UTF_8))
+                    .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() >= 200 && response.statusCode() < 300) {
+                System.out.println("✅ Real OTP email delivered via Brevo API to: " + recipientEmail + " [HTTP " + response.statusCode() + "]");
+                return true;
+            } else {
+                System.err.println("❌ Brevo API response [" + response.statusCode() + "]: " + response.body());
+            }
+        } catch (Exception e) {
+            System.err.println("❌ Brevo API exception: " + e.getMessage());
+        }
+        return false;
     }
 
     private static boolean sendViaResend(String recipientEmail, String otpCode, String htmlContent) {
@@ -73,6 +126,10 @@ public class EmailUtil {
     }
 
     private static boolean sendViaSmtp(String recipientEmail, String otpCode, String htmlContent) {
+        if (SMTP_USER == null || SMTP_PASS == null) {
+            return false;
+        }
+
         Properties props = new Properties();
         props.put("mail.smtp.host", SMTP_HOST);
         props.put("mail.smtp.port", SMTP_PORT);

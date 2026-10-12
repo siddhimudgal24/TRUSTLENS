@@ -7,7 +7,7 @@ import {
   ShieldCheck,
   Users,
 } from "lucide-react";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import LiveShelterMap from "../components/map/LiveShelterMap";
 import { useShelterStore } from "../store/shelterStore";
@@ -19,24 +19,53 @@ function Dashboard() {
   const shelters = useShelterStore((state) => state.shelters);
   const selectedShelter = useShelterStore((state) => state.selectedShelter);
   const selectShelter = useShelterStore((state) => state.selectShelter);
-  const displayedShelter = selectedShelter ?? shelters[0];
+ type ShelterFilter = "all" | "operational" | "at-risk" | "unavailable";
 
-  const operational = shelters.filter(
-    (shelter) => shelter.status === "recommended"
-  ).length;
-  const atRisk = shelters.filter(
-    (shelter) =>
-      shelter.status === "conditional" || shelter.status === "avoid"
-  ).length;
-  const unavailable = shelters.filter(
-    (shelter) => shelter.status === "unavailable"
-  ).length;
-  const averageReadiness = shelters.length
-    ? Math.round(
-        shelters.reduce((total, shelter) => total + shelter.readiness, 0) /
-          shelters.length
-      )
-    : 0;
+const [statusFilter, setStatusFilter] = useState<ShelterFilter>("all");
+
+const filteredShelters = shelters.filter((shelter) => {
+  switch (statusFilter) {
+    case "operational":
+      return shelter.status === "recommended";
+    case "at-risk":
+      return (
+        shelter.status === "conditional" ||
+        shelter.status === "avoid"
+      );
+    case "unavailable":
+      return shelter.status === "unavailable";
+    default:
+      return true;
+  }
+});
+
+const displayedShelter =
+  filteredShelters.find(
+    (shelter) => shelter.id === selectedShelter?.id
+  ) ?? filteredShelters[0];
+
+ const operational = filteredShelters.filter(
+  (shelter) => shelter.status === "recommended"
+).length;
+
+const atRisk = filteredShelters.filter(
+  (shelter) =>
+    shelter.status === "conditional" ||
+    shelter.status === "avoid"
+).length;
+
+const unavailable = filteredShelters.filter(
+  (shelter) => shelter.status === "unavailable"
+).length;
+
+const averageReadiness = filteredShelters.length
+  ? Math.round(
+      filteredShelters.reduce(
+        (total, shelter) => total + shelter.readiness,
+        0
+      ) / filteredShelters.length
+    )
+  : 0;
 
   const metrics = [
     {
@@ -48,7 +77,7 @@ function Dashboard() {
     },
     {
       label: "Total Shelters",
-      value: shelters.length.toString(),
+     value: filteredShelters.length.toString(),
       note: "Registered facilities",
       icon: Building2,
       color: "blue",
@@ -59,9 +88,9 @@ function Dashboard() {
       note: "Recommended",
       icon: Check,
       color: "green",
-      percent: shelters.length
-        ? Math.round((operational / shelters.length) * 100)
-        : 0,
+     percent: filteredShelters.length
+  ? Math.round((operational / filteredShelters.length) * 100)
+  : 0,
     },
     {
       label: "At Risk",
@@ -69,9 +98,9 @@ function Dashboard() {
       note: "Review readiness",
       icon: AlertTriangle,
       color: "red",
-      percent: shelters.length
-        ? Math.round((atRisk / shelters.length) * 100)
-        : 0,
+     percent: filteredShelters.length
+  ? Math.round((atRisk / filteredShelters.length) * 100)
+  : 0,
     },
     {
       label: "Unavailable",
@@ -79,9 +108,9 @@ function Dashboard() {
       note: "Not available",
       icon: Clock3,
       color: "slate",
-      percent: shelters.length
-        ? Math.round((unavailable / shelters.length) * 100)
-        : 0,
+     percent: filteredShelters.length
+  ? Math.round((unavailable / filteredShelters.length) * 100)
+  : 0,
     },
   ];
 
@@ -93,6 +122,35 @@ function Dashboard() {
 
   return (
     <div className="dashboard-page space-y-2.5 text-slate-900">
+      <section
+  aria-label="Filter shelters by status"
+  className="flex flex-wrap items-center gap-2"
+>
+  <span className="text-xs font-semibold text-slate-600">
+    Shelter Status:
+  </span>
+
+  {[
+    { label: "All", value: "all" },
+    { label: "Operational", value: "operational" },
+    { label: "At Risk", value: "at-risk" },
+    { label: "Unavailable", value: "unavailable" },
+  ].map((option) => (
+    <button
+      key={option.value}
+      type="button"
+      aria-pressed={statusFilter === option.value}
+      onClick={() => setStatusFilter(option.value as ShelterFilter)}
+      className={`rounded-md border px-3 py-1.5 text-xs font-medium transition-colors ${
+        statusFilter === option.value
+          ? "border-blue-600 bg-blue-600 text-white"
+          : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+      }`}
+    >
+      {option.label}
+    </button>
+  ))}
+</section>
       <h1 className="sr-only">Emergency Response Dashboard</h1>
       <section
         aria-label="Emergency response metrics"
@@ -181,7 +239,7 @@ function Dashboard() {
               </ResponsiveContainer>
               <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
                 <span className="text-base font-bold text-slate-900">
-                  {shelters.length}
+                 {filteredShelters.length}
                 </span>
                 <span className="text-[8px] text-slate-500">Total shelters</span>
               </div>

@@ -204,17 +204,56 @@ function Dashboard() {
           </p>
         </article>
 
-        <article className="dashboard-panel min-h-[150px] rounded-lg border p-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xs font-bold text-slate-900">Recent Activities</h2>
-            <span className="text-[9px] text-slate-400">Activity feed</span>
-          </div>
-          <div className="flex h-[112px] items-center justify-center rounded-md bg-slate-50 px-5 text-center">
-            <p className="max-w-[220px] text-[10px] leading-4 text-slate-500">
-              No activity history is available in this prototype.
-            </p>
-          </div>
-        </article>
+      
+<article className="dashboard-panel min-h-[150px] rounded-lg border p-3">
+  <div className="flex items-center justify-between">
+    <h2 className="text-xs font-bold text-slate-900">
+      Recent Activities
+    </h2>
+    <span className="text-[9px] text-slate-400">
+      Activity feed
+    </span>
+  </div>
+
+  <div className="mt-3 space-y-3">
+    <div className="flex items-start gap-2">
+      <span className="mt-1 h-2 w-2 rounded-full bg-emerald-500" />
+      <div>
+        <p className="text-[10px] font-semibold text-slate-800">
+          Shelter readiness overview updated
+        </p>
+        <p className="text-[9px] text-slate-500">
+          Review operational and at-risk shelters.
+        </p>
+      </div>
+    </div>
+
+    <div className="flex items-start gap-2">
+      <span className="mt-1 h-2 w-2 rounded-full bg-blue-500" />
+      <div>
+        <p className="text-[10px] font-semibold text-slate-800">
+          Shelter capacity monitoring
+        </p>
+        <p className="text-[9px] text-slate-500">
+          Check occupancy and available capacity.
+        </p>
+      </div>
+    </div>
+
+    <div className="flex items-start gap-2">
+      <span className="mt-1 h-2 w-2 rounded-full bg-amber-500" />
+      <div>
+        <p className="text-[10px] font-semibold text-slate-800">
+          Risk review reminder
+        </p>
+        <p className="text-[9px] text-slate-500">
+          Review shelters marked at risk.
+        </p>
+      </div>
+    </div>
+  </div>
+</article>
+
 
         <article className="dashboard-panel min-h-[150px] rounded-lg border p-3">
           <div className="flex items-center justify-between">

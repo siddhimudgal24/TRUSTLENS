@@ -323,6 +323,24 @@ function ShelterSummary({
         <MiniStat icon={<Users size={14} />} label="Occupancy" value={`${occupancy}%`} tone="orange" />
         <MiniStat icon={<Building2 size={14} />} label="Available" value={available} tone="green" />
       </div>
+      {occupancy >= 80 && (
+  <div
+    role="status"
+    className="mt-2 flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 p-2 text-amber-800"
+  >
+    <AlertTriangle size={14} className="mt-0.5 shrink-0" />
+
+    <div>
+      <p className="text-[10px] font-bold">
+        High Occupancy Warning
+      </p>
+      <p className="text-[9px]">
+        Shelter is {occupancy}% occupied.
+        Only {available} spaces remain.
+      </p>
+    </div>
+  </div>
+)}
 
       <div className="mt-2 grid grid-cols-2 gap-1.5">
         <ReadinessTile label="Readiness" value={`${shelter.readiness}/100`} tone="green" />

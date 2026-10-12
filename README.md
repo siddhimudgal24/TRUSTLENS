@@ -291,6 +291,15 @@ Run from `frontend/`:
 powershell
 npm run lint
 npm run build
+**Manual verification**
+
+Before submitting changes, verify the following where applicable:
+
+- [ ] Frontend starts successfully using `npm run dev`.
+- [ ] Login and registration flows work with a configured backend.
+- [ ] OTP and password-reset flows are checked with valid backend configuration.
+- [ ] Shelter maps, readiness views, scenarios, and analytics render with the available sample data.
+- [ ] Any failed or untested checks are documented accurately.
 
 
 The production frontend is generated in `frontend/dist/`.

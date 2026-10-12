@@ -226,8 +226,7 @@ erDiagram
 ```
 
 ## Project structure
-
-```text
+```
 TRUSTLENS/
 ├── backend/
 │   ├── database/schema.sql       # MySQL database and tables
@@ -246,6 +245,15 @@ TRUSTLENS/
 ├── start-backend.bat
 └── README.md
 ```
+The frontend follows a modular structure to keep the application organized:
+
+- **Components:** Reusable UI elements for layout, maps, shelters, inspections, scenarios, and analytics.
+- **Pages:** Route-level screens that combine components into complete views.
+- **Data:** Local sample data used by shelter and emergency-planning demonstrations.
+- **Store:** Zustand-based in-memory state management.
+- **Utils:** Helper functions, including shelter-readiness calculations.
+
+Most shelter operations and analytics currently rely on local demonstration data rather than live backend records.
 
 ## Getting started
 
@@ -280,10 +288,10 @@ The standalone runner starts on port `8080`. The repository includes `start-back
 
 Run from `frontend/`:
 
-```powershell
+powershell
 npm run lint
 npm run build
-```
+
 
 The production frontend is generated in `frontend/dist/`.
 
@@ -291,9 +299,9 @@ The production frontend is generated in `frontend/dist/`.
 
 The backend Maven project is in `backend/`. Build its WAR from the repository root with:
 
-```powershell
+powershell
 mvn -f backend/pom.xml clean package
-```
+
 
 The configured artifact name is `backend/target/trustlens.war`. The POM targets Java 17 and declares Servlet/JSP APIs as provided dependencies. Deploy the WAR to a compatible servlet container (the dependencies target the `javax.servlet` generation, such as Tomcat 9). This WAR deployment is distinct from launching the standalone `ServerRunner` API.
 
@@ -310,3 +318,4 @@ The configured artifact name is `backend/target/trustlens.war`. The POM targets 
 - Email delivery requires valid SMTP configuration. Do not commit real credentials.
 - OpenStreetMap tiles require an internet connection; review the provider's usage policy before production deployment.
 - Configure static hosting to serve `frontend/index.html` for client-side routes such as `/shelters` and `/analytics`. Configure the production API origin and CORS/route behavior explicitly; Vite's proxy applies only during development.
+**Implementation note:** TRUSTLENS currently combines implemented authentication endpoints with frontend demonstrations for shelter readiness, hazard visualization, allocation, scenarios, inspections, and analytics. These operational views should be treated as demonstrations until they are connected to verified live data and their workflows are tested.

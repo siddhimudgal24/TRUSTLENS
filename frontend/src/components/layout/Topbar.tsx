@@ -68,11 +68,11 @@ function Topbar() {
   };
 
   return (
-    <header className="app-topbar flex min-h-[60px] items-center gap-2 border-b px-3 py-2 sm:gap-3 sm:px-4 lg:px-2.5">
+    <header className="app-topbar flex min-h-[60px] items-center justify-between gap-3 border-b px-3 py-2 sm:px-4 lg:px-6">
       <form
         role="search"
         onSubmit={handleSearchSubmit}
-        className="topbar-search relative flex min-w-0 flex-1 items-center gap-2 rounded-lg border px-3 py-2"
+        className="topbar-search relative flex min-w-0 w-full max-w-sm sm:max-w-md items-center gap-2 rounded-lg border px-3 py-2"
       >
         <Search size={15} className="shrink-0 text-slate-400" />
         <input
@@ -125,56 +125,59 @@ function Topbar() {
         )}
       </form>
 
-      <div className="hidden items-center gap-2 rounded-lg border border-red-100 bg-red-50 px-3 py-2 text-red-700 sm:flex">
-        <TriangleAlert size={16} />
-        <div className="leading-tight">
-          <p className="text-[11px] font-semibold">Flood risk areas</p>
-          <p className="text-[9px] text-red-600">Mapped high-risk zones</p>
+      {/* Right Side Header Items: Flood risk areas, Weather, Bell Alerts, and Profile */}
+      <div className="flex items-center gap-2 sm:gap-3.5 ml-auto shrink-0">
+        <div className="hidden items-center gap-2 rounded-lg border border-red-100 bg-red-50 px-3 py-2 text-red-700 sm:flex">
+          <TriangleAlert size={16} />
+          <div className="leading-tight">
+            <p className="text-[11px] font-semibold">Flood risk areas</p>
+            <p className="text-[9px] text-red-600">Mapped high-risk zones</p>
+          </div>
         </div>
-      </div>
 
-      <div className="hidden items-center gap-2 px-1 text-slate-700 md:flex">
-        <CloudRain size={19} className="text-blue-500" />
-        <div className="leading-tight">
-          <p className="text-xs font-semibold">Weather</p>
-          <p className="text-[9px] text-slate-500">Not connected</p>
+        <div className="hidden items-center gap-2 px-1 text-slate-700 md:flex">
+          <CloudRain size={19} className="text-blue-500" />
+          <div className="leading-tight">
+            <p className="text-xs font-semibold">Weather</p>
+            <p className="text-[9px] text-slate-500">Not connected</p>
+          </div>
         </div>
+
+        <button
+          type="button"
+          onClick={() => navigate("/alerts")}
+          aria-label={`Emergency alerts, ${activeAlertCount} active`}
+          title="Open emergency alerts"
+          className="relative rounded-lg p-2 text-slate-600 transition hover:bg-slate-100 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-200"
+        >
+          <Bell size={18} />
+          {activeAlertCount > 0 && (
+            <span
+              aria-hidden="true"
+              className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[9px] font-bold leading-none text-white"
+            >
+              {activeAlertCount > 99 ? "99+" : activeAlertCount}
+            </span>
+          )}
+        </button>
+
+        {(() => {
+          const user = getStoredUser();
+          const userInitial = user?.fullName
+            ? user.fullName.trim()[0].toUpperCase()
+            : (user?.username ? user.username.trim()[0].toUpperCase() : "U");
+          return (
+            <button
+              type="button"
+              onClick={() => navigate("/profile")}
+              title={`Logged in as ${user?.fullName || user?.username || "Officer"} - View Profile`}
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-blue-600 to-cyan-500 text-xs font-bold text-white shadow-md hover:scale-105 active:scale-95 transition cursor-pointer"
+            >
+              {userInitial}
+            </button>
+          );
+        })()}
       </div>
-
-      <button
-        type="button"
-        onClick={() => navigate("/alerts")}
-        aria-label={`Emergency alerts, ${activeAlertCount} active`}
-        title="Open emergency alerts"
-        className="relative rounded-lg p-2 text-slate-600 transition hover:bg-slate-100 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-200"
-      >
-        <Bell size={18} />
-        {activeAlertCount > 0 && (
-          <span
-            aria-hidden="true"
-            className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[9px] font-bold leading-none text-white"
-          >
-            {activeAlertCount > 99 ? "99+" : activeAlertCount}
-          </span>
-        )}
-      </button>
-
-      {(() => {
-        const user = getStoredUser();
-        const userInitial = user?.fullName
-          ? user.fullName.trim()[0].toUpperCase()
-          : (user?.username ? user.username.trim()[0].toUpperCase() : "U");
-        return (
-          <button
-            type="button"
-            onClick={() => navigate("/profile")}
-            title={`Logged in as ${user?.fullName || user?.username || "Officer"} - View Profile`}
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-blue-600 to-cyan-500 text-xs font-bold text-white shadow-md hover:scale-105 active:scale-95 transition cursor-pointer"
-          >
-            {userInitial}
-          </button>
-        );
-      })()}
     </header>
   );
 }

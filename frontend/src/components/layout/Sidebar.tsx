@@ -9,7 +9,6 @@ import {
   ShieldCheck,
   Waves,
   LogOut,
-  User,
 } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { clearStoredUser } from "../../utils/auth";
@@ -24,7 +23,6 @@ const menuItems = [
   { name: "Allocation", icon: Route, path: "/allocation" },
   { name: "Scenarios", icon: Waves, path: "/scenarios" },
   { name: "Analytics", icon: BarChart3, path: "/analytics" },
-  { name: "My Profile", icon: User, path: "/profile" },
 ];
 
 function Sidebar() {

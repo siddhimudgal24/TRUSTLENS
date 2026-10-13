@@ -140,96 +140,124 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-[#080E1A] text-white flex flex-col justify-center items-center px-4 py-12">
-      <div className="w-full max-w-lg">
+    <div className="min-h-screen bg-[#F4F7FB] text-slate-800 flex flex-col justify-center items-center px-4 py-12 relative overflow-hidden">
+      {/* Background Ambient Glows */}
+      <div className="absolute -top-32 -left-32 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="w-full max-w-lg relative z-10">
         {/* Branding */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-600/20 border border-blue-500/30 text-blue-500 mb-4 shadow-lg shadow-blue-500/10">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white mb-4 shadow-xl shadow-blue-500/25">
             <ShieldCheck size={36} />
           </div>
-          <h1 className="text-3xl font-bold tracking-tight text-white">TrustLens Registration</h1>
-          <p className="text-sm text-gray-400 mt-1">Module 1 — User Role Onboarding & Email OTP Verification</p>
+          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">TrustLens</h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1.5 font-medium">
+            Emergency Operations Platform · Role-Based Onboarding
+          </p>
         </div>
 
         {/* Card */}
-        <div className="bg-[#0B1220] border border-gray-800 rounded-2xl p-8 shadow-2xl backdrop-blur-xl">
-          <h2 className="text-xl font-semibold text-white mb-2">Create Account</h2>
-          <p className="text-xs text-gray-400 mb-6">Enter details below to receive an email OTP for verification</p>
+        <div className="bg-white border border-slate-200/90 rounded-3xl p-8 sm:p-10 shadow-xl shadow-slate-200/60 backdrop-blur-xl">
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-slate-900">Create Account</h2>
+            <p className="text-xs text-slate-500 mt-1">
+              Enter your details below to receive an email OTP for identity verification
+            </p>
+          </div>
 
           {message && !showOtpModal && (
-            <div className={`mb-6 p-3 rounded-lg border text-xs flex items-center gap-2 ${
-              message.type === "success" ? "bg-green-500/10 border-green-500/20 text-green-400" : "bg-red-500/10 border-red-500/20 text-red-400"
-            }`}>
-              {message.type === "success" ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
-              <span>{message.text}</span>
+            <div
+              className={`mb-6 p-4 rounded-xl border text-xs flex items-center gap-3 ${
+                message.type === "success"
+                  ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+                  : "bg-rose-50 border-rose-200 text-rose-800"
+              }`}
+            >
+              {message.type === "success" ? (
+                <CheckCircle2 size={18} className="shrink-0 text-emerald-600" />
+              ) : (
+                <AlertCircle size={18} className="shrink-0 text-rose-600" />
+              )}
+              <span className="font-medium">{message.text}</span>
             </div>
           )}
 
           <form onSubmit={handleStartRegister} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1.5">Full Name</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                  Full Name
+                </label>
                 <div className="relative">
-                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
+                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                   <input
                     type="text"
                     required
                     value={formData.fullName}
                     onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                     placeholder="John Doe"
-                    className="w-full bg-[#131C2E] border border-gray-700/60 rounded-xl pl-9 pr-3 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 hover:bg-slate-50/80 focus:bg-white border border-slate-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 rounded-xl pl-9 pr-3.5 py-2.5 text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none transition shadow-sm"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1.5">Username</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                  Username
+                </label>
                 <input
                   type="text"
                   required
                   value={formData.username}
                   onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                   placeholder="johndoe"
-                  className="w-full bg-[#131C2E] border border-gray-700/60 rounded-xl px-3 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+                  className="w-full bg-slate-50 hover:bg-slate-50/80 focus:bg-white border border-slate-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none transition shadow-sm"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">Email Address (OTP Verification)</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                Email Address (For OTP Verification)
+              </label>
               <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                 <input
                   type="email"
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="john@example.com"
-                  className="w-full bg-[#131C2E] border border-gray-700/60 rounded-xl pl-9 pr-3 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+                  className="w-full bg-slate-50 hover:bg-slate-50/80 focus:bg-white border border-slate-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 rounded-xl pl-9 pr-3.5 py-2.5 text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none transition shadow-sm"
                 />
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1.5">Phone Number</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                  Phone Number
+                </label>
                 <div className="relative">
-                  <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
+                  <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                   <input
-                    type="text"
+                    type="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    placeholder="+1234567890"
-                    className="w-full bg-[#131C2E] border border-gray-700/60 rounded-xl pl-9 pr-3 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+                    placeholder="+91 98765 43210"
+                    className="w-full bg-slate-50 hover:bg-slate-50/80 focus:bg-white border border-slate-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 rounded-xl pl-9 pr-3.5 py-2.5 text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none transition shadow-sm"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1.5">Assign Role</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                  Assign Operational Role
+                </label>
                 <select
                   value={formData.roleId}
                   onChange={(e) => setFormData({ ...formData, roleId: e.target.value })}
-                  className="w-full bg-[#131C2E] border border-gray-700/60 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500"
+                  className="w-full bg-slate-50 hover:bg-slate-50/80 focus:bg-white border border-slate-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 focus:outline-none transition shadow-sm"
                 >
                   <option value="4">Field Officer</option>
                   <option value="3">Shelter Manager</option>
@@ -240,9 +268,11 @@ export default function Register() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">Password</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                Password
+              </label>
               <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                 <input
                   type="password"
                   required
@@ -250,18 +280,19 @@ export default function Register() {
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   placeholder="••••••••"
-                  className="w-full bg-[#131C2E] border border-gray-700/60 rounded-xl pl-9 pr-3 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+                  className="w-full bg-slate-50 hover:bg-slate-50/80 focus:bg-white border border-slate-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 rounded-xl pl-9 pr-3.5 py-2.5 text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none transition shadow-sm"
                 />
               </div>
+              <p className="text-[11px] text-slate-400 mt-1">Must be at least 6 characters long</p>
             </div>
 
             <button
               type="submit"
               disabled={isOtpSending}
-              className="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-3 rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-blue-600/25 disabled:opacity-50 mt-4"
+              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-[0.99] text-white font-semibold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-600/25 disabled:opacity-50 mt-6"
             >
               {isOtpSending ? (
-                <span>Sending OTP...</span>
+                <span>Sending Verification OTP...</span>
               ) : (
                 <>
                   <span>Send OTP & Continue</span>
@@ -271,10 +302,10 @@ export default function Register() {
             </button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-xs text-gray-400">
+          <div className="mt-8 pt-6 border-t border-slate-100 text-center">
+            <p className="text-xs text-slate-500">
               Already have an account?{" "}
-              <Link to="/login" className="text-blue-400 hover:text-blue-300 font-medium">
+              <Link to="/login" className="text-blue-600 hover:text-blue-700 font-semibold hover:underline">
                 Sign In
               </Link>
             </p>
@@ -282,66 +313,80 @@ export default function Register() {
         </div>
       </div>
 
-      {/* OTP Verification Window Modal */}
+      {/* OTP Verification Window Modal (Light Theme) */}
       {showOtpModal && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#0B1220] border border-gray-800 rounded-2xl p-6 w-full max-w-md shadow-2xl relative">
+        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 w-full max-w-md shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
             <button
               onClick={() => setShowOtpModal(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-white"
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition"
+              aria-label="Close modal"
             >
               <X size={20} />
             </button>
 
             <div className="text-center mb-6">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-blue-500/20 text-blue-400 mb-3">
-                <KeyRound size={24} />
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-blue-50 border border-blue-100 text-blue-600 mb-3 shadow-sm">
+                <KeyRound size={26} />
               </div>
-              <h3 className="text-lg font-bold text-white">Email OTP Verification</h3>
-              <p className="text-xs text-gray-400 mt-1">
-                Enter the 6-digit code sent to <span className="text-blue-400 font-medium">{formData.email}</span>
+              <h3 className="text-xl font-bold text-slate-900">Email OTP Verification</h3>
+              <p className="text-xs text-slate-500 mt-1">
+                Enter the 6-digit verification code sent to <br />
+                <span className="text-blue-600 font-semibold">{formData.email}</span>
               </p>
             </div>
 
             {message && (
-              <div className={`mb-4 p-3 rounded-lg border text-xs flex items-center gap-2 ${
-                message.type === "success" ? "bg-green-500/10 border-green-500/20 text-green-400" : "bg-red-500/10 border-red-500/20 text-red-400"
-              }`}>
-                {message.type === "success" ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
-                <span>{message.text}</span>
+              <div
+                className={`mb-5 p-3.5 rounded-xl border text-xs flex items-center gap-2.5 ${
+                  message.type === "success"
+                    ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+                    : "bg-rose-50 border-rose-200 text-rose-800"
+                }`}
+              >
+                {message.type === "success" ? (
+                  <CheckCircle2 size={16} className="shrink-0 text-emerald-600" />
+                ) : (
+                  <AlertCircle size={16} className="shrink-0 text-rose-600" />
+                )}
+                <span className="font-medium">{message.text}</span>
               </div>
             )}
 
             <div className="space-y-4">
               <div>
-                <label className="block text-xs text-center text-gray-400 mb-2">6-Digit Verification Code</label>
+                <label className="block text-xs font-semibold text-center text-slate-600 mb-2">
+                  6-Digit Verification Code
+                </label>
                 <input
                   type="text"
                   maxLength={6}
                   value={otpCode}
                   onChange={(e) => setOtpCode(e.target.value)}
-                  placeholder="123456"
-                  className="w-full text-center tracking-[12px] font-mono text-xl py-3 bg-[#131C2E] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                  placeholder="••••••"
+                  className="w-full text-center tracking-[12px] font-mono text-2xl font-bold py-3.5 bg-slate-50 hover:bg-slate-50/80 focus:bg-white border-2 border-slate-200 focus:border-blue-600 rounded-2xl text-slate-900 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition shadow-inner"
                 />
               </div>
 
-              <div className="flex justify-between items-center text-xs text-gray-400 px-1">
-                <span>Time remaining: <strong className="text-white">{timer}s</strong></span>
+              <div className="flex justify-between items-center text-xs text-slate-500 px-1 pt-1">
+                <span>
+                  Expires in: <strong className="text-slate-800">{timer}s</strong>
+                </span>
                 <button
                   type="button"
                   disabled={!canResend}
                   onClick={sendOtp}
-                  className="text-blue-400 hover:text-blue-300 disabled:opacity-40 flex items-center gap-1"
+                  className="text-blue-600 hover:text-blue-700 font-semibold disabled:opacity-40 disabled:hover:text-blue-600 flex items-center gap-1.5 transition"
                 >
-                  <RefreshCw size={12} />
-                  <span>Resend OTP</span>
+                  <RefreshCw size={13} />
+                  <span>Resend Code</span>
                 </button>
               </div>
 
               <button
                 onClick={handleVerifyAndRegister}
                 disabled={isVerifying || otpVerified}
-                className="w-full bg-green-600 hover:bg-green-500 text-white font-medium py-3 rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-green-600/25 disabled:opacity-50"
+                className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 active:scale-[0.99] text-white font-semibold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 disabled:opacity-50 mt-2"
               >
                 {isVerifying ? (
                   <span>Verifying Code...</span>

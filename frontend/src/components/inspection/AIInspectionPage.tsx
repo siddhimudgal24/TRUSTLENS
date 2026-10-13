@@ -25,7 +25,7 @@ function ShelterDetailPanel({
   }
 
   return (
-    <div className="absolute right-4 top-4 z-1000 w-85 bg-[#0B1220]/95 backdrop-blur-md border border-white/10 rounded-xl text-white shadow-2xl">
+    <div className="absolute right-4 top-4 z-1000 w-85 bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-2xl text-slate-800 shadow-2xl">
 
       <div className="p-5">
 

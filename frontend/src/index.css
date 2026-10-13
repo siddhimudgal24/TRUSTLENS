@@ -50,12 +50,14 @@ select:focus-visible {
 }
 
 .app-sidebar {
-  background: #10243d;
+  background: #ffffff !important;
+  border-right: 1px solid #e2e8f0 !important;
+  color: #1e293b !important;
 }
 
 .sidebar-brand {
   min-height: 60px;
-  border-bottom: 1px solid rgb(255 255 255 / 8%);
+  border-bottom: 1px solid #f1f5f9 !important;
 }
 
 .app-topbar {
@@ -77,7 +79,14 @@ select:focus-visible {
 .app-main [class*="bg-[#070B14]"],
 .app-main [class*="bg-[#0D1320]"],
 .app-main [class*="bg-[#111827]"],
-.app-main [class*="bg-[#0B1220]"] {
+.app-main [class*="bg-[#0B1220]"],
+.app-main [class*="bg-[#0b1220]"],
+.app-main [class*="bg-[#131C2E]"],
+.app-main [class*="bg-[#131c2e]"],
+.app-main [class*="bg-[#0E1626]"],
+.app-main [class*="bg-[#0E1524]"],
+.app-main [class*="bg-[#10243d]"],
+.app-main [class*="bg-[#10243D]"] {
   background-color: #fff !important;
 }
 
@@ -85,6 +94,22 @@ select:focus-visible {
 .app-main [class*="bg-white/5"],
 .app-main [class*="bg-white/10"] {
   background-color: #f3f6fb !important;
+}
+
+.app-main input[class*="bg-[#131C2E]"],
+.app-main select[class*="bg-[#131C2E]"],
+.app-main textarea[class*="bg-[#131C2E]"],
+.app-main input[class*="bg-[#070B14]"],
+.app-main select[class*="bg-[#070B14]"],
+.app-main textarea[class*="bg-[#070B14]"] {
+  background-color: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+.app-main input[class*="bg-[#131C2E]"]::placeholder,
+.app-main textarea[class*="bg-[#131C2E]"]::placeholder {
+  color: #94a3b8 !important;
 }
 
 .app-main [class*="border-white/10"],

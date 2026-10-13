@@ -149,76 +149,76 @@ export default function Disasters() {
 
       {/* Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-[#0B1220] border border-gray-800 rounded-2xl p-5">
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-400">Active Disasters</span>
-            <Radio className="text-red-400 animate-pulse" size={18} />
+            <span className="text-xs font-medium text-slate-500">Active Disasters</span>
+            <Radio className="text-rose-500 animate-pulse" size={18} />
           </div>
-          <p className="text-2xl font-bold text-white mt-2">
+          <p className="text-2xl font-bold text-slate-900 mt-2">
             {disasters.filter((d) => d.status === "ACTIVE").length}
           </p>
         </div>
 
-        <div className="bg-[#0B1220] border border-gray-800 rounded-2xl p-5">
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-400">Critical Incidents</span>
-            <AlertTriangle className="text-amber-400" size={18} />
+            <span className="text-xs font-medium text-slate-500">Critical Incidents</span>
+            <AlertTriangle className="text-amber-500" size={18} />
           </div>
-          <p className="text-2xl font-bold text-amber-400 mt-2">
+          <p className="text-2xl font-bold text-amber-600 mt-2">
             {disasters.filter((d) => d.severity === "CRITICAL").length}
           </p>
         </div>
 
-        <div className="bg-[#0B1220] border border-gray-800 rounded-2xl p-5">
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-400">Monitored Zones</span>
-            <MapPin className="text-blue-400" size={18} />
+            <span className="text-xs font-medium text-slate-500">Monitored Zones</span>
+            <MapPin className="text-blue-600" size={18} />
           </div>
-          <p className="text-2xl font-bold text-blue-400 mt-2">4</p>
+          <p className="text-2xl font-bold text-blue-600 mt-2">4</p>
         </div>
 
-        <div className="bg-[#0B1220] border border-gray-800 rounded-2xl p-5">
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-400">Priority 1 Families</span>
-            <Users className="text-green-400" size={18} />
+            <span className="text-xs font-medium text-slate-500">Priority 1 Families</span>
+            <Users className="text-emerald-600" size={18} />
           </div>
-          <p className="text-2xl font-bold text-green-400 mt-2">12</p>
+          <p className="text-2xl font-bold text-emerald-600 mt-2">12</p>
         </div>
       </div>
 
       {/* Disaster List Table */}
-      <div className="bg-[#0B1220] border border-gray-800 rounded-2xl p-6 shadow-xl">
-        <h3 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
-          <Activity size={18} className="text-blue-400" />
+      <div className="bg-white border border-slate-200/90 rounded-3xl p-6 shadow-sm">
+        <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
+          <Activity size={18} className="text-blue-600" />
           <span>Active & Monitored Disaster Events</span>
         </h3>
 
         {loading ? (
-          <div className="py-12 text-center text-xs text-gray-400">Loading disasters...</div>
+          <div className="py-12 text-center text-xs text-slate-400">Loading disasters...</div>
         ) : disasters.length === 0 ? (
-          <div className="py-12 text-center text-xs text-gray-400">No active disasters recorded.</div>
+          <div className="py-12 text-center text-xs text-slate-400">No active disasters recorded.</div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-gray-300">
-              <thead className="bg-[#131C2E] text-gray-400 border-b border-gray-800">
+            <table className="w-full text-left text-xs text-slate-700">
+              <thead className="bg-slate-50 text-slate-600 border-b border-slate-200">
                 <tr>
-                  <th className="p-3">Title & Type</th>
-                  <th className="p-3">Location</th>
-                  <th className="p-3">Severity</th>
-                  <th className="p-3">Status</th>
-                  <th className="p-3">Coordinates</th>
-                  <th className="p-3">Description</th>
+                  <th className="p-3 font-semibold">Title & Type</th>
+                  <th className="p-3 font-semibold">Location</th>
+                  <th className="p-3 font-semibold">Severity</th>
+                  <th className="p-3 font-semibold">Status</th>
+                  <th className="p-3 font-semibold">Coordinates</th>
+                  <th className="p-3 font-semibold">Description</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-800/60">
+              <tbody className="divide-y divide-slate-100">
                 {disasters.map((d) => (
-                  <tr key={d.disasterId} className="hover:bg-white/5 transition">
-                    <td className="p-3 font-medium text-white">
+                  <tr key={d.disasterId} className="hover:bg-slate-50/80 transition">
+                    <td className="p-3 font-medium text-slate-900">
                       <div>{d.title}</div>
-                      <span className="text-[10px] text-gray-400">{d.type}</span>
+                      <span className="text-[10px] text-slate-400">{d.type}</span>
                     </td>
                     <td className="p-3 flex items-center gap-1.5">
-                      <MapPin size={14} className="text-blue-400" />
+                      <MapPin size={14} className="text-blue-600" />
                       <span>{d.locationName}</span>
                     </td>
                     <td className="p-3">
@@ -231,15 +231,15 @@ export default function Disasters() {
                       </span>
                     </td>
                     <td className="p-3">
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] bg-green-500/10 text-green-400 border border-green-500/20">
-                        <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-ping" />
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
                         {d.status}
                       </span>
                     </td>
-                    <td className="p-3 font-mono text-gray-400">
+                    <td className="p-3 font-mono text-[11px] text-slate-500">
                       {d.latitude.toFixed(4)}, {d.longitude.toFixed(4)}
                     </td>
-                    <td className="p-3 text-gray-400 max-w-xs truncate">{d.description}</td>
+                    <td className="p-3 text-slate-600 max-w-xs truncate">{d.description}</td>
                   </tr>
                 ))}
               </tbody>
@@ -250,31 +250,31 @@ export default function Disasters() {
 
       {/* Modal: Declare New Disaster */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#0B1220] border border-gray-800 rounded-2xl p-6 w-full max-w-lg shadow-2xl">
-            <h3 className="text-lg font-bold text-white mb-1">Declare Emergency Event</h3>
-            <p className="text-xs text-gray-400 mb-6">Record a new disaster event for dynamic shelter allocation</p>
+        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 w-full max-w-lg shadow-2xl">
+            <h3 className="text-lg font-bold text-slate-900 mb-1">Declare Emergency Event</h3>
+            <p className="text-xs text-slate-500 mb-6">Record a new disaster event for dynamic shelter allocation</p>
 
             <form onSubmit={handleCreateDisaster} className="space-y-4">
               <div>
-                <label className="block text-xs text-gray-400 mb-1">Disaster Title</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Disaster Title</label>
                 <input
                   type="text"
                   required
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   placeholder="e.g. Cyclone Coastal Warning Sector 7"
-                  className="w-full bg-[#131C2E] border border-gray-700/60 rounded-xl px-3 py-2 text-xs text-white"
+                  className="w-full bg-slate-50 hover:bg-slate-50/80 focus:bg-white border border-slate-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none transition shadow-sm"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs text-gray-400 mb-1">Type</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Type</label>
                   <select
                     value={formData.type}
                     onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                    className="w-full bg-[#131C2E] border border-gray-700/60 rounded-xl px-3 py-2 text-xs text-white"
+                    className="w-full bg-slate-50 hover:bg-slate-50/80 focus:bg-white border border-slate-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none transition shadow-sm"
                   >
                     <option value="Flood">Flood</option>
                     <option value="Cyclone">Cyclone</option>
@@ -285,11 +285,11 @@ export default function Disasters() {
                 </div>
 
                 <div>
-                  <label className="block text-xs text-gray-400 mb-1">Severity Level</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Severity Level</label>
                   <select
                     value={formData.severity}
                     onChange={(e) => setFormData({ ...formData, severity: e.target.value })}
-                    className="w-full bg-[#131C2E] border border-gray-700/60 rounded-xl px-3 py-2 text-xs text-white"
+                    className="w-full bg-slate-50 hover:bg-slate-50/80 focus:bg-white border border-slate-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none transition shadow-sm"
                   >
                     <option value="CRITICAL">CRITICAL</option>
                     <option value="HIGH">HIGH</option>
@@ -300,46 +300,46 @@ export default function Disasters() {
               </div>
 
               <div>
-                <label className="block text-xs text-gray-400 mb-1">Location Name</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Location Name</label>
                 <input
                   type="text"
                   required
                   value={formData.locationName}
                   onChange={(e) => setFormData({ ...formData, locationName: e.target.value })}
                   placeholder="Sector 4 Basin Area"
-                  className="w-full bg-[#131C2E] border border-gray-700/60 rounded-xl px-3 py-2 text-xs text-white"
+                  className="w-full bg-slate-50 hover:bg-slate-50/80 focus:bg-white border border-slate-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none transition shadow-sm"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs text-gray-400 mb-1">Latitude</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Latitude</label>
                   <input
                     type="text"
                     value={formData.latitude}
                     onChange={(e) => setFormData({ ...formData, latitude: e.target.value })}
-                    className="w-full bg-[#131C2E] border border-gray-700/60 rounded-xl px-3 py-2 text-xs text-white font-mono"
+                    className="w-full bg-slate-50 hover:bg-slate-50/80 focus:bg-white border border-slate-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-mono focus:outline-none transition shadow-sm"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-400 mb-1">Longitude</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Longitude</label>
                   <input
                     type="text"
                     value={formData.longitude}
                     onChange={(e) => setFormData({ ...formData, longitude: e.target.value })}
-                    className="w-full bg-[#131C2E] border border-gray-700/60 rounded-xl px-3 py-2 text-xs text-white font-mono"
+                    className="w-full bg-slate-50 hover:bg-slate-50/80 focus:bg-white border border-slate-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-mono focus:outline-none transition shadow-sm"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs text-gray-400 mb-1">Description & Operational Notes</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Description & Operational Notes</label>
                 <textarea
                   rows={3}
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   placeholder="Provide emergency details and affected area metrics..."
-                  className="w-full bg-[#131C2E] border border-gray-700/60 rounded-xl p-3 text-xs text-white"
+                  className="w-full bg-slate-50 hover:bg-slate-50/80 focus:bg-white border border-slate-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 rounded-xl p-3 text-xs text-slate-900 focus:outline-none transition shadow-sm"
                 />
               </div>
 
@@ -347,13 +347,13 @@ export default function Disasters() {
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2 rounded-xl text-xs text-gray-400 hover:text-white"
+                  className="px-4 py-2 rounded-xl text-xs text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-medium"
+                  className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-[0.99] text-white rounded-xl text-xs font-semibold shadow-md shadow-blue-600/20"
                 >
                   Save & Log Emergency
                 </button>

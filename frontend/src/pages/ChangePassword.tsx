@@ -42,69 +42,69 @@ export default function ChangePassword() {
     <div className="max-w-2xl mx-auto space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-          <Shield className="text-blue-500" size={28} />
+        <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+          <Shield className="text-blue-600" size={28} />
           <span>Security & Change Password</span>
         </h1>
-        <p className="text-xs text-gray-400 mt-1">Manage your account security and password preferences</p>
+        <p className="text-xs text-slate-500 mt-1">Manage your account security and password preferences</p>
       </div>
 
       {/* Form Card */}
-      <div className="bg-[#0B1220] border border-gray-800 rounded-2xl p-6 shadow-xl">
+      <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-sm">
         {message && (
           <div className={`mb-6 p-4 rounded-xl border text-xs flex items-center gap-3 ${
-            message.type === "success" ? "bg-green-500/10 border-green-500/20 text-green-400" : "bg-red-500/10 border-red-500/20 text-red-400"
+            message.type === "success" ? "bg-emerald-50 border-emerald-200 text-emerald-800" : "bg-rose-50 border-rose-200 text-rose-800"
           }`}>
-            {message.type === "success" ? <CheckCircle2 size={18} /> : <AlertCircle size={18} />}
-            <span>{message.text}</span>
+            {message.type === "success" ? <CheckCircle2 size={18} className="text-emerald-600" /> : <AlertCircle size={18} className="text-rose-600" />}
+            <span className="font-medium">{message.text}</span>
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-xs font-medium text-gray-400 mb-1.5">Current Password</label>
+            <label className="block text-xs font-semibold text-slate-700 mb-1.5">Current Password</label>
             <div className="relative">
-              <Key className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+              <Key className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
               <input
                 type="password"
                 required
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full bg-[#131C2E] border border-gray-700/60 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+                className="w-full bg-slate-50 hover:bg-slate-50/80 focus:bg-white border border-slate-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 rounded-xl pl-10 pr-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none transition shadow-sm"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">New Password</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1.5">New Password</label>
               <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                 <input
                   type="password"
                   required
                   minLength={6}
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full bg-[#131C2E] border border-gray-700/60 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+                  placeholder="At least 6 characters"
+                  className="w-full bg-slate-50 hover:bg-slate-50/80 focus:bg-white border border-slate-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 rounded-xl pl-10 pr-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none transition shadow-sm"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">Confirm New Password</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1.5">Confirm New Password</label>
               <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                 <input
                   type="password"
                   required
                   minLength={6}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full bg-[#131C2E] border border-gray-700/60 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+                  placeholder="Repeat new password"
+                  className="w-full bg-slate-50 hover:bg-slate-50/80 focus:bg-white border border-slate-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 rounded-xl pl-10 pr-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none transition shadow-sm"
                 />
               </div>
             </div>
@@ -114,7 +114,7 @@ export default function ChangePassword() {
             <button
               type="submit"
               disabled={loading}
-              className="bg-blue-600 hover:bg-blue-500 text-white font-medium px-6 py-3 rounded-xl transition flex items-center gap-2 shadow-lg shadow-blue-600/25 disabled:opacity-50 text-sm"
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-[0.99] text-white font-semibold px-6 py-3.5 rounded-xl transition flex items-center gap-2 shadow-md shadow-blue-600/20 disabled:opacity-50 text-sm"
             >
               {loading ? (
                 <span>Updating Password...</span>

@@ -119,7 +119,7 @@ function ScenarioSimulator() {
                 event.target.value
               )
             }
-            className="mt-2 w-full bg-[#0B1220] border border-white/10 rounded-lg px-4 py-3 text-sm text-white outline-none"
+            className="mt-2 w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 outline-none focus:border-blue-600 shadow-xs"
           >
 
             <option value="none">

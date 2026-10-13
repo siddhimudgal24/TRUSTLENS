@@ -47,7 +47,7 @@ function App() {
                       <div
                         role="status"
                         aria-live="polite"
-                        className="flex min-h-48 items-center justify-center gap-3 rounded-lg border border-slate-700 bg-[#0B1220] text-sm text-slate-300 p-8"
+                        className="flex min-h-48 items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white text-sm text-slate-600 shadow-sm p-8"
                       >
                         <span className="h-4 w-4 animate-spin rounded-full border-2 border-blue-200 border-t-blue-600" />
                         Loading operations module...

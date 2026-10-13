@@ -155,7 +155,7 @@ function ShelterPage() {
               setSearch(e.target.value)
             }
             placeholder="Search shelter..."
-            className="flex-1 bg-[#0B1220] border border-white/10 rounded-lg px-4 py-3 text-sm outline-none focus:border-green-500/50"
+            className="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 shadow-xs"
           />
 
           <select
@@ -163,7 +163,7 @@ function ShelterPage() {
             onChange={(e) =>
               setFilter(e.target.value)
             }
-            className="bg-[#0B1220] border border-white/10 rounded-lg px-4 py-3 text-sm outline-none"
+            className="bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 outline-none focus:border-blue-600 shadow-xs"
           >
             <option value="all">
               All Shelters

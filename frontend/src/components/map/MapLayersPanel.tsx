@@ -41,13 +41,13 @@ function MapLayersPanel({
   ];
 
   return (
-    <div className="map-layers-panel absolute right-3 top-3 z-[1000] w-[min(10.5rem,calc(100%-1.5rem))] rounded-xl border border-white/10 bg-[#0B1220]/95 text-white shadow-2xl backdrop-blur-md sm:right-4 sm:top-4">
-      <div className="border-b border-white/10 px-3 py-2">
-        <h3 className="text-[10px] font-semibold">
+    <div className="map-layers-panel absolute right-3 top-3 z-[1000] w-[min(10.5rem,calc(100%-1.5rem))] rounded-2xl border border-slate-200/90 bg-white/95 text-slate-800 shadow-xl backdrop-blur-md sm:right-4 sm:top-4">
+      <div className="border-b border-slate-100 px-3 py-2">
+        <h3 className="text-[10px] font-bold text-slate-900">
           MAP LAYERS
         </h3>
 
-        <p className="mt-0.5 text-[9px] text-gray-400">
+        <p className="mt-0.5 text-[9px] text-slate-500">
           Control map visibility
         </p>
       </div>

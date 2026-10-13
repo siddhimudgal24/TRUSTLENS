@@ -207,23 +207,21 @@ export default function Profile() {
     <div className="max-w-4xl mx-auto space-y-6 pb-12">
       {/* Page Title */}
       <div>
-        <h1 className="text-2xl font-bold text-white flex items-center gap-2.5">
-          <Shield className="text-blue-500" size={28} />
+        <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2.5">
+          <Shield className="text-blue-600" size={28} />
           <span>My Profile & Account Settings</span>
         </h1>
-        <p className="text-xs text-gray-400 mt-1">
+        <p className="text-xs text-slate-500 mt-1">
           Manage your operational credentials, identity details, and account security
         </p>
       </div>
 
       {/* Hero Profile Banner */}
-      <div className="bg-[#0B1220] border border-gray-800 rounded-2xl p-6 shadow-xl relative overflow-hidden backdrop-blur-xl">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
-
+      <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-sm relative overflow-hidden">
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 relative z-10">
           {/* Avatar Badge */}
-          <div className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-blue-600 to-cyan-500 p-0.5 shadow-lg shadow-blue-500/20 shrink-0">
-            <div className="w-full h-full bg-[#0E1626] rounded-2xl flex items-center justify-center font-bold text-2xl text-blue-400">
+          <div className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 p-0.5 shadow-md shadow-blue-500/15 shrink-0">
+            <div className="w-full h-full bg-white rounded-2xl flex items-center justify-center font-bold text-2xl text-blue-600">
               {getInitials(fullName || username)}
             </div>
           </div>
@@ -231,24 +229,24 @@ export default function Profile() {
           {/* User Bio */}
           <div className="flex-1 text-center sm:text-left">
             <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-1.5">
-              <h2 className="text-xl font-bold text-white">{fullName || username || "Field Officer"}</h2>
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-500/10 border border-blue-500/30 text-blue-400 w-fit mx-auto sm:mx-0">
+              <h2 className="text-xl font-bold text-slate-900">{fullName || username || "Field Officer"}</h2>
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-50 border border-blue-200 text-blue-700 w-fit mx-auto sm:mx-0">
                 <BadgeCheck size={14} />
                 {role}
               </span>
             </div>
 
-            <p className="text-xs text-gray-400 mb-3">
-              @{username || "user"} · <span className="text-gray-300">{email || "No email linked"}</span>
+            <p className="text-xs text-slate-500 mb-3">
+              @{username || "user"} · <span className="text-slate-700 font-medium">{email || "No email linked"}</span>
             </p>
 
-            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 text-xs text-gray-400">
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 text-xs text-slate-500">
               <div className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-emerald-400 font-medium">Account Active</span>
+                <span className="text-emerald-700 font-semibold">Account Active</span>
               </div>
               {createdAt && (
-                <div className="flex items-center gap-1.5 text-gray-400">
+                <div className="flex items-center gap-1.5 text-slate-500">
                   <Calendar size={14} />
                   <span>Joined {new Date(createdAt).toLocaleDateString()}</span>
                 </div>
@@ -259,13 +257,13 @@ export default function Profile() {
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex border-b border-gray-800">
+      <div className="flex border-b border-slate-200">
         <button
           onClick={() => setActiveTab("details")}
           className={`flex items-center gap-2 px-6 py-3 text-xs font-semibold border-b-2 transition ${
             activeTab === "details"
-              ? "border-blue-500 text-blue-400 bg-blue-500/5"
-              : "border-transparent text-gray-400 hover:text-gray-200"
+              ? "border-blue-600 text-blue-600 bg-blue-50/50"
+              : "border-transparent text-slate-500 hover:text-slate-800"
           }`}
         >
           <User size={16} />
@@ -276,8 +274,8 @@ export default function Profile() {
           onClick={() => setActiveTab("security")}
           className={`flex items-center gap-2 px-6 py-3 text-xs font-semibold border-b-2 transition ${
             activeTab === "security"
-              ? "border-blue-500 text-blue-400 bg-blue-500/5"
-              : "border-transparent text-gray-400 hover:text-gray-200"
+              ? "border-blue-600 text-blue-600 bg-blue-50/50"
+              : "border-transparent text-slate-500 hover:text-slate-800"
           }`}
         >
           <Lock size={16} />
@@ -287,10 +285,10 @@ export default function Profile() {
 
       {/* TAB 1: PROFILE DETAILS */}
       {activeTab === "details" && (
-        <div className="bg-[#0B1220] border border-gray-800 rounded-2xl p-6 shadow-xl space-y-6">
+        <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
           <div>
-            <h3 className="text-base font-semibold text-white">Personal & Contact Information</h3>
-            <p className="text-xs text-gray-400 mt-0.5">
+            <h3 className="text-base font-semibold text-slate-900">Personal & Contact Information</h3>
+            <p className="text-xs text-slate-500 mt-0.5">
               Update your displayed name, contact phone, and verified email address
             </p>
           </div>
@@ -299,85 +297,85 @@ export default function Profile() {
             <div
               className={`p-4 rounded-xl border text-xs flex items-center gap-3 ${
                 profileMessage.type === "success"
-                  ? "bg-green-500/10 border-green-500/20 text-green-400"
-                  : "bg-red-500/10 border-red-500/20 text-red-400"
+                  ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+                  : "bg-rose-50 border-rose-200 text-rose-800"
               }`}
             >
               {profileMessage.type === "success" ? (
-                <CheckCircle2 size={18} className="shrink-0" />
+                <CheckCircle2 size={18} className="shrink-0 text-emerald-600" />
               ) : (
-                <AlertCircle size={18} className="shrink-0" />
+                <AlertCircle size={18} className="shrink-0 text-rose-600" />
               )}
-              <span>{profileMessage.text}</span>
+              <span className="font-medium">{profileMessage.text}</span>
             </div>
           )}
 
           <form onSubmit={handleSaveProfile} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                   Full Name
                 </label>
                 <div className="relative">
-                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
+                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                   <input
                     type="text"
                     required
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder="Enter your full name"
-                    className="w-full bg-[#131C2E] border border-gray-700/60 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 hover:bg-slate-50/80 focus:bg-white border border-slate-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none transition shadow-sm"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                   Username
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600" size={16} />
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                   <input
                     type="text"
                     disabled
                     value={username}
-                    className="w-full bg-[#0E1524] border border-gray-800 rounded-xl pl-10 pr-4 py-2.5 text-xs text-gray-400 cursor-not-allowed"
+                    className="w-full bg-slate-100 border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-500 cursor-not-allowed"
                   />
                 </div>
-                <p className="text-[10px] text-gray-500 mt-1">Username is your permanent identifier</p>
+                <p className="text-[10px] text-slate-400 mt-1">Username is your permanent identifier</p>
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                   Email Address
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                   <input
                     type="email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="user@example.com"
-                    className="w-full bg-[#131C2E] border border-gray-700/60 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 hover:bg-slate-50/80 focus:bg-white border border-slate-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none transition shadow-sm"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                   Phone Number
                 </label>
                 <div className="relative">
-                  <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
+                  <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                   <input
                     type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="+91 98765 43210"
-                    className="w-full bg-[#131C2E] border border-gray-700/60 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 hover:bg-slate-50/80 focus:bg-white border border-slate-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none transition shadow-sm"
                   />
                 </div>
               </div>
@@ -387,7 +385,7 @@ export default function Profile() {
               <button
                 type="submit"
                 disabled={isSavingProfile}
-                className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium px-5 py-2.5 rounded-xl transition shadow-lg shadow-blue-600/20 disabled:opacity-50"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-[0.99] text-white text-xs font-semibold px-5 py-2.5 rounded-xl transition shadow-md shadow-blue-600/20 disabled:opacity-50"
               >
                 <Save size={16} />
                 <span>{isSavingProfile ? "Saving Details..." : "Save Profile Changes"}</span>
@@ -399,10 +397,10 @@ export default function Profile() {
 
       {/* TAB 2: SECURITY & PASSWORD */}
       {activeTab === "security" && (
-        <div className="bg-[#0B1220] border border-gray-800 rounded-2xl p-6 shadow-xl space-y-6">
+        <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
           <div>
-            <h3 className="text-base font-semibold text-white">Change Account Password</h3>
-            <p className="text-xs text-gray-400 mt-0.5">
+            <h3 className="text-base font-semibold text-slate-900">Change Account Password</h3>
+            <p className="text-xs text-slate-500 mt-0.5">
               Ensure your account is protected with a strong password of at least 6 characters
             </p>
           </div>
@@ -411,44 +409,44 @@ export default function Profile() {
             <div
               className={`p-4 rounded-xl border text-xs flex items-center gap-3 ${
                 passwordMessage.type === "success"
-                  ? "bg-green-500/10 border-green-500/20 text-green-400"
-                  : "bg-red-500/10 border-red-500/20 text-red-400"
+                  ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+                  : "bg-rose-50 border-rose-200 text-rose-800"
               }`}
             >
               {passwordMessage.type === "success" ? (
-                <CheckCircle2 size={18} className="shrink-0" />
+                <CheckCircle2 size={18} className="shrink-0 text-emerald-600" />
               ) : (
-                <ShieldAlert size={18} className="shrink-0" />
+                <ShieldAlert size={18} className="shrink-0 text-rose-600" />
               )}
-              <span>{passwordMessage.text}</span>
+              <span className="font-medium">{passwordMessage.text}</span>
             </div>
           )}
 
           <form onSubmit={handleUpdatePassword} className="space-y-4">
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                 Current Password
               </label>
               <div className="relative">
-                <Key className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
+                <Key className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                 <input
                   type="password"
                   required
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   placeholder="Enter current password"
-                  className="w-full bg-[#131C2E] border border-gray-700/60 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+                  className="w-full bg-slate-50 hover:bg-slate-50/80 focus:bg-white border border-slate-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none transition shadow-sm"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                   New Password
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                   <input
                     type="password"
                     required
@@ -456,17 +454,17 @@ export default function Profile() {
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="At least 6 characters"
-                    className="w-full bg-[#131C2E] border border-gray-700/60 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 hover:bg-slate-50/80 focus:bg-white border border-slate-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none transition shadow-sm"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                   Confirm New Password
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                   <input
                     type="password"
                     required
@@ -474,7 +472,7 @@ export default function Profile() {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Repeat new password"
-                    className="w-full bg-[#131C2E] border border-gray-700/60 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 hover:bg-slate-50/80 focus:bg-white border border-slate-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none transition shadow-sm"
                   />
                 </div>
               </div>
@@ -484,7 +482,7 @@ export default function Profile() {
               <button
                 type="submit"
                 disabled={isUpdatingPassword}
-                className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium px-5 py-2.5 rounded-xl transition shadow-lg shadow-emerald-600/20 disabled:opacity-50"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 active:scale-[0.99] text-white text-xs font-semibold px-5 py-2.5 rounded-xl transition shadow-md shadow-emerald-600/20 disabled:opacity-50"
               >
                 <Lock size={16} />
                 <span>{isUpdatingPassword ? "Updating Password..." : "Update Password"}</span>

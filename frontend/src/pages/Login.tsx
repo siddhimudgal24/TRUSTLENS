@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ShieldCheck, Mail, Lock, ArrowRight, AlertCircle } from "lucide-react";
+import { Mail, Lock, ArrowRight, AlertCircle } from "lucide-react";
 import { setStoredUser, type AuthUser } from "../utils/auth";
 
 export default function Login() {
@@ -61,8 +61,8 @@ export default function Login() {
       <div className="w-full max-w-md relative z-10">
         {/* Header Branding */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white mb-4 shadow-xl shadow-blue-500/25">
-            <ShieldCheck size={36} />
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-white p-2 mb-4 shadow-xl shadow-blue-500/10 border border-slate-200/90 transition hover:scale-105 duration-200">
+            <img src="/logo.jpeg" alt="TrustLens Logo" className="w-full h-full object-contain rounded-2xl" />
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">TrustLens</h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1.5 font-medium">

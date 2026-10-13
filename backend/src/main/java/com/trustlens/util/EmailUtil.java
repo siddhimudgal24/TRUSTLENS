@@ -180,6 +180,7 @@ public class EmailUtil {
                 + "        <table width='100%' border='0' cellspacing='0' cellpadding='0' style='max-width: 540px; background-color: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);'>"
                 + "          <tr>"
                 + "            <td style='padding: 36px 36px 24px 36px; text-align: center; border-bottom: 1px solid #F1F5F9;'>"
+                + "              <img src='https://trustlens-system.vercel.app/logo.jpeg' alt='TrustLens' width='68' height='68' style='display: block; margin: 0 auto 16px auto; border-radius: 18px; border: 1px solid #E2E8F0; box-shadow: 0 4px 12px rgba(0,0,0,0.06);' />"
                 + "              <div style='display: inline-block; background-color: #EFF6FF; border: 1px solid #DBEAFE; padding: 6px 14px; border-radius: 9999px; color: #2563EB; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;'>"
                 + "                Emergency Operations Platform"
                 + "              </div>"

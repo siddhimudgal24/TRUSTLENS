@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ShieldCheck, User, Mail, Phone, Lock, ArrowRight, KeyRound, RefreshCw, CheckCircle2, AlertCircle, X } from "lucide-react";
+import { User, Mail, Phone, Lock, ArrowRight, RefreshCw, CheckCircle2, AlertCircle, X } from "lucide-react";
 import { setStoredUser, type AuthUser } from "../utils/auth";
 
 export default function Register() {
@@ -148,8 +148,8 @@ export default function Register() {
       <div className="w-full max-w-lg relative z-10">
         {/* Branding */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white mb-4 shadow-xl shadow-blue-500/25">
-            <ShieldCheck size={36} />
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-white p-2 mb-4 shadow-xl shadow-blue-500/10 border border-slate-200/90 transition hover:scale-105 duration-200">
+            <img src="/logo.jpeg" alt="TrustLens Logo" className="w-full h-full object-contain rounded-2xl" />
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">TrustLens</h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1.5 font-medium">
@@ -326,8 +326,8 @@ export default function Register() {
             </button>
 
             <div className="text-center mb-6">
-              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-blue-50 border border-blue-100 text-blue-600 mb-3 shadow-sm">
-                <KeyRound size={26} />
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white p-1.5 mb-3 shadow-md border border-slate-200">
+                <img src="/logo.jpeg" alt="TrustLens Logo" className="w-full h-full object-contain rounded-xl" />
               </div>
               <h3 className="text-xl font-bold text-slate-900">Email OTP Verification</h3>
               <p className="text-xs text-slate-500 mt-1">

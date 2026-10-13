@@ -1,5 +1,4 @@
 import {
-  Activity,
   AlertTriangle,
   BellRing,
   BarChart3,
@@ -40,10 +39,12 @@ function Sidebar() {
 
   return (
     <aside className="app-sidebar flex w-full shrink-0 flex-col text-white lg:sticky lg:top-0 lg:h-screen lg:w-[154px] xl:w-48 bg-[#0B1220] border-r border-slate-800">
-      <div className="sidebar-brand flex items-center gap-2 px-4 py-4">
-        <Activity className="shrink-0 text-blue-400" size={27} strokeWidth={2.7} />
+      <div className="sidebar-brand flex items-center gap-2.5 px-3 py-3.5">
+        <div className="w-8 h-8 rounded-lg bg-white p-0.5 shrink-0 shadow-md border border-slate-700/60 overflow-hidden">
+          <img src="/logo.jpeg" alt="TrustLens Logo" className="w-full h-full object-contain rounded-md" />
+        </div>
         <div className="min-w-0">
-          <h1 className="text-lg font-bold leading-5 tracking-wide text-blue-400">TRUSTLENS</h1>
+          <h1 className="text-sm font-bold leading-4 tracking-wide text-white">TRUSTLENS</h1>
           <p className="mt-0.5 max-w-[118px] text-[7px] leading-[9px] text-slate-400">
             Safer communities. Stronger tomorrow.
           </p>

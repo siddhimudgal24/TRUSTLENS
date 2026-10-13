@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ShieldCheck, User, Mail, Phone, Lock, ArrowRight, KeyRound, RefreshCw, CheckCircle2, AlertCircle, X } from "lucide-react";
+import { setStoredUser, type AuthUser } from "../utils/auth";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -112,8 +113,18 @@ export default function Register() {
         const regData = await regRes.json();
 
         if (regData.success) {
-          setMessage({ type: "success", text: "Account registered successfully in database! Redirecting to login..." });
-          setTimeout(() => navigate("/login"), 2000);
+          const userSession: AuthUser = {
+            userId: regData.userId,
+            username: regData.username || formData.username.trim(),
+            fullName: regData.fullName || formData.fullName.trim(),
+            email: regData.email || cleanEmail,
+            phone: regData.phone || formData.phone.trim(),
+            role: regData.role || (formData.roleId === "2" ? "Disaster Manager" : formData.roleId === "3" ? "Shelter Manager" : "Field Officer"),
+            roleId: regData.roleId || formData.roleId,
+          };
+          setStoredUser(userSession);
+          setMessage({ type: "success", text: "Registration successful! Loading Command Center..." });
+          setTimeout(() => navigate("/"), 1200);
         } else {
           setOtpVerified(false);
           setMessage({ type: "error", text: regData.message || "Registration failed." });

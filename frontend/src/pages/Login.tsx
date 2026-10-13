@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ShieldCheck, Mail, Lock, ArrowRight, AlertCircle } from "lucide-react";
+import { setStoredUser, type AuthUser } from "../utils/auth";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ export default function Login() {
     try {
       // Attempt backend API login call
       const params = new URLSearchParams();
-      params.append("username", username);
+      params.append("username", username.trim());
       params.append("password", password);
 
       const response = await fetch("/api/login", {
@@ -26,20 +27,26 @@ export default function Login() {
         body: params,
       });
 
-      if (response.redirected || response.ok) {
+      const data = await response.json().catch(() => null);
+
+      if (response.ok && data && data.success) {
+        const userSession: AuthUser = {
+          userId: data.userId,
+          username: data.username || username.trim(),
+          fullName: data.fullName || username.trim(),
+          email: data.email || "",
+          phone: data.phone || "",
+          role: data.role || "Field Officer",
+          roleId: data.roleId || 4,
+          createdAt: data.createdAt,
+        };
+        setStoredUser(userSession);
         navigate("/");
       } else {
-        setError("Invalid username or password. Please try again.");
+        setError(data?.message || "Invalid username or password. Please try again.");
       }
     } catch {
-      // Fallback for development demo if server connection is simulated
-      if (username && password) {
-        setTimeout(() => {
-          navigate("/");
-        }, 600);
-      } else {
-        setError("Please enter your credentials.");
-      }
+      setError("Unable to connect to authentication server. Please check connection.");
     } finally {
       setLoading(false);
     }

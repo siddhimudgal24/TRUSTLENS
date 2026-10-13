@@ -11,9 +11,10 @@ import {
   ShieldCheck,
   Waves,
   LogOut,
-  KeyRound
+  User,
 } from "lucide-react";
-import { NavLink, Link } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { clearStoredUser } from "../../utils/auth";
 
 const menuItems = [
   { name: "Dashboard", icon: LayoutDashboard, path: "/" },
@@ -26,10 +27,17 @@ const menuItems = [
   { name: "Emergency Alerts", icon: BellRing, path: "/alerts" },
   { name: "Scenarios", icon: Waves, path: "/scenarios" },
   { name: "Analytics", icon: BarChart3, path: "/analytics" },
-  { name: "Change Password", icon: KeyRound, path: "/change-password" },
+  { name: "My Profile", icon: User, path: "/profile" },
 ];
 
 function Sidebar() {
+  const navigate = useNavigate();
+
+  const handleSignOut = () => {
+    clearStoredUser();
+    navigate("/register");
+  };
+
   return (
     <aside className="app-sidebar flex w-full shrink-0 flex-col text-white lg:sticky lg:top-0 lg:h-screen lg:w-[154px] xl:w-48 bg-[#0B1220] border-r border-slate-800">
       <div className="sidebar-brand flex items-center gap-2 px-4 py-4">
@@ -61,13 +69,13 @@ function Sidebar() {
       </nav>
 
       <div className="sidebar-settings mt-auto hidden px-2 pb-4 pt-4 lg:block border-t border-slate-800">
-        <Link
-          to="/login"
-          className="flex items-center gap-3 rounded-md px-3 py-2 text-red-400 hover:bg-red-500/10 transition"
+        <button
+          onClick={handleSignOut}
+          className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-red-400 hover:bg-red-500/10 transition text-left"
         >
           <LogOut size={16} />
           <span className="text-xs font-medium">Sign Out</span>
-        </Link>
+        </button>
         <div className="flex items-center gap-1.5 mt-3 px-3">
           <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
           <p className="text-[10px] text-slate-400">System operational</p>

@@ -73,6 +73,8 @@ public class ServerRunner {
         server.createContext("/api/verify-otp", new VerifyOtpHandler());
         server.createContext("/api/forgot-password", new ForgotPasswordHandler());
         server.createContext("/api/reset-password", new ResetPasswordHandler());
+        server.createContext("/api/profile", new ProfileHandler());
+        server.createContext("/api/change-password", new ChangePasswordHandler());
 
         // Module 2 Endpoints
         server.createContext("/api/disasters", new DisasterHandler());
@@ -150,9 +152,14 @@ public class ServerRunner {
             if (user != null) {
                 json.addProperty("success", true);
                 json.addProperty("message", "Login successful");
+                json.addProperty("userId", user.getUserId());
                 json.addProperty("username", user.getUsername());
                 json.addProperty("fullName", user.getFullName());
-                json.addProperty("role", user.getRoleName());
+                json.addProperty("email", user.getEmail());
+                json.addProperty("phone", user.getPhoneNumber() != null ? user.getPhoneNumber() : "");
+                json.addProperty("role", user.getRoleName() != null ? user.getRoleName() : "Field Officer");
+                json.addProperty("roleId", user.getRoleId());
+                json.addProperty("createdAt", user.getCreatedAt() != null ? user.getCreatedAt().toString() : "");
             } else {
                 json.addProperty("success", false);
                 json.addProperty("message", "Invalid username or password");
@@ -203,6 +210,18 @@ public class ServerRunner {
                 boolean success = userDAO.registerUser(user, params.get("password"));
                 json.addProperty("success", success);
                 json.addProperty("message", success ? "User registered successfully!" : "Registration failed.");
+                if (success) {
+                    User created = userDAO.getUserByUsername(username);
+                    if (created != null) {
+                        json.addProperty("userId", created.getUserId());
+                        json.addProperty("username", created.getUsername());
+                        json.addProperty("fullName", created.getFullName());
+                        json.addProperty("email", created.getEmail());
+                        json.addProperty("phone", created.getPhoneNumber() != null ? created.getPhoneNumber() : "");
+                        json.addProperty("role", created.getRoleName() != null ? created.getRoleName() : "Field Officer");
+                        json.addProperty("roleId", created.getRoleId());
+                    }
+                }
             }
 
             byte[] response = json.toString().getBytes(StandardCharsets.UTF_8);
@@ -363,6 +382,159 @@ public class ServerRunner {
                 boolean updated = userDAO.updatePassword(email, newPassword);
                 json.addProperty("success", updated);
                 json.addProperty("message", updated ? "Password reset successfully!" : "Failed to update password.");
+            }
+
+            byte[] response = json.toString().getBytes(StandardCharsets.UTF_8);
+            exchange.getResponseHeaders().add("Content-Type", "application/json");
+            exchange.sendResponseHeaders(200, response.length);
+            OutputStream os = exchange.getResponseBody();
+            os.write(response);
+            os.close();
+        }
+    }
+
+    static class ProfileHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            enableCorsAndHeaders(exchange);
+            if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+                exchange.sendResponseHeaders(204, -1);
+                return;
+            }
+
+            String method = exchange.getRequestMethod();
+            JsonObject json = new JsonObject();
+
+            if ("GET".equalsIgnoreCase(method)) {
+                Map<String, String> query = parseQueryParams(exchange.getRequestURI().getQuery());
+                String username = query.get("username");
+                String email = query.get("email");
+
+                User user = null;
+                if (username != null && !username.trim().isEmpty()) {
+                    user = userDAO.getUserByUsername(username.trim());
+                }
+                if (user == null && email != null && !email.trim().isEmpty()) {
+                    user = userDAO.getUserByEmail(email.trim());
+                }
+
+                if (user != null) {
+                    json.addProperty("success", true);
+                    json.addProperty("userId", user.getUserId());
+                    json.addProperty("username", user.getUsername());
+                    json.addProperty("fullName", user.getFullName());
+                    json.addProperty("email", user.getEmail());
+                    json.addProperty("phone", user.getPhoneNumber() != null ? user.getPhoneNumber() : "");
+                    json.addProperty("role", user.getRoleName() != null ? user.getRoleName() : "Field Officer");
+                    json.addProperty("roleId", user.getRoleId());
+                    json.addProperty("active", user.isActive());
+                    json.addProperty("createdAt", user.getCreatedAt() != null ? user.getCreatedAt().toString() : "");
+                } else {
+                    json.addProperty("success", false);
+                    json.addProperty("message", "User not found");
+                }
+            } else if ("POST".equalsIgnoreCase(method) || "PUT".equalsIgnoreCase(method)) {
+                Map<String, String> params = parseBody(exchange);
+                String username = params.get("username");
+                String fullName = params.get("fullName");
+                String phone = params.get("phone");
+                String email = params.get("email");
+
+                User user = null;
+                if (username != null && !username.trim().isEmpty()) {
+                    user = userDAO.getUserByUsername(username.trim());
+                } else if (email != null && !email.trim().isEmpty()) {
+                    user = userDAO.getUserByEmail(email.trim());
+                }
+
+                if (user == null) {
+                    json.addProperty("success", false);
+                    json.addProperty("message", "User not found to update");
+                } else {
+                    if (fullName != null && !fullName.trim().isEmpty()) {
+                        user.setFullName(fullName.trim());
+                    }
+                    if (phone != null) {
+                        user.setPhoneNumber(phone.trim());
+                    }
+                    if (email != null && !email.trim().isEmpty() && !email.trim().equalsIgnoreCase(user.getEmail())) {
+                        User existingEmailUser = userDAO.getUserByEmail(email.trim());
+                        if (existingEmailUser != null && existingEmailUser.getUserId() != user.getUserId()) {
+                            json.addProperty("success", false);
+                            json.addProperty("message", "Email is already taken by another user.");
+                            byte[] response = json.toString().getBytes(StandardCharsets.UTF_8);
+                            exchange.getResponseHeaders().add("Content-Type", "application/json");
+                            exchange.sendResponseHeaders(200, response.length);
+                            OutputStream os = exchange.getResponseBody();
+                            os.write(response);
+                            os.close();
+                            return;
+                        }
+                        user.setEmail(email.trim());
+                    }
+
+                    boolean updated = userDAO.updateUser(user);
+                    json.addProperty("success", updated);
+                    json.addProperty("message", updated ? "Profile updated successfully!" : "Failed to update profile.");
+                    if (updated) {
+                        User refreshed = userDAO.getUserById(user.getUserId());
+                        if (refreshed != null) user = refreshed;
+                        json.addProperty("userId", user.getUserId());
+                        json.addProperty("username", user.getUsername());
+                        json.addProperty("fullName", user.getFullName());
+                        json.addProperty("email", user.getEmail());
+                        json.addProperty("phone", user.getPhoneNumber() != null ? user.getPhoneNumber() : "");
+                        json.addProperty("role", user.getRoleName() != null ? user.getRoleName() : "Field Officer");
+                        json.addProperty("roleId", user.getRoleId());
+                    }
+                }
+            } else {
+                json.addProperty("success", false);
+                json.addProperty("message", "Method not allowed");
+            }
+
+            byte[] response = json.toString().getBytes(StandardCharsets.UTF_8);
+            exchange.getResponseHeaders().add("Content-Type", "application/json");
+            exchange.sendResponseHeaders(200, response.length);
+            OutputStream os = exchange.getResponseBody();
+            os.write(response);
+            os.close();
+        }
+    }
+
+    static class ChangePasswordHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            enableCorsAndHeaders(exchange);
+            if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+                exchange.sendResponseHeaders(204, -1);
+                return;
+            }
+
+            Map<String, String> params = parseBody(exchange);
+            String username = params.get("username");
+            String email = params.get("email");
+            String currentPassword = params.get("currentPassword");
+            String newPassword = params.get("newPassword");
+
+            JsonObject json = new JsonObject();
+            if ((username == null || username.trim().isEmpty()) && (email == null || email.trim().isEmpty())) {
+                json.addProperty("success", false);
+                json.addProperty("message", "Username or email is required.");
+            } else if (currentPassword == null || newPassword == null || newPassword.length() < 6) {
+                json.addProperty("success", false);
+                json.addProperty("message", "New password must be at least 6 characters.");
+            } else {
+                String loginIdentifier = (username != null && !username.trim().isEmpty()) ? username.trim() : email.trim();
+                User authenticated = userDAO.authenticate(loginIdentifier, currentPassword);
+                if (authenticated == null) {
+                    json.addProperty("success", false);
+                    json.addProperty("message", "Current password is incorrect.");
+                } else {
+                    boolean updated = userDAO.updatePassword(authenticated.getEmail(), newPassword);
+                    json.addProperty("success", updated);
+                    json.addProperty("message", updated ? "Password updated successfully!" : "Failed to update password.");
+                }
             }
 
             byte[] response = json.toString().getBytes(StandardCharsets.UTF_8);

@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { affectedZones, type Shelter } from "../../data/mockData";
 import { useShelterStore } from "../../store/shelterStore";
 import { useEmergencyAlertStore } from "../../store/emergencyAlertStore";
+import { getStoredUser } from "../../utils/auth";
 
 interface SearchResult {
   label: string;
@@ -157,9 +158,23 @@ function Topbar() {
           </span>
         )}
       </button>
-      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#29486f] text-xs font-semibold text-white">
-        S
-      </div>
+
+      {(() => {
+        const user = getStoredUser();
+        const userInitial = user?.fullName
+          ? user.fullName.trim()[0].toUpperCase()
+          : (user?.username ? user.username.trim()[0].toUpperCase() : "U");
+        return (
+          <button
+            type="button"
+            onClick={() => navigate("/profile")}
+            title={`Logged in as ${user?.fullName || user?.username || "Officer"} - View Profile`}
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-blue-600 to-cyan-500 text-xs font-bold text-white shadow-md hover:scale-105 active:scale-95 transition cursor-pointer"
+          >
+            {userInitial}
+          </button>
+        );
+      })()}
     </header>
   );
 }

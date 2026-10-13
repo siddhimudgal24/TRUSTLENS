@@ -236,7 +236,7 @@ export default function Register() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                  Phone Number
+                  Phone Number <span className="text-slate-400 font-normal">(Optional)</span>
                 </label>
                 <div className="relative">
                   <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
@@ -244,7 +244,7 @@ export default function Register() {
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    placeholder="+91 98765 43210"
+                    placeholder="+91 98765 43210 (Emergency SMS only)"
                     className="w-full bg-slate-50 hover:bg-slate-50/80 focus:bg-white border border-slate-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 rounded-xl pl-9 pr-3.5 py-2.5 text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none transition shadow-sm"
                   />
                 </div>
@@ -286,10 +286,18 @@ export default function Register() {
               <p className="text-[11px] text-slate-400 mt-1">Must be at least 6 characters long</p>
             </div>
 
+            {/* Data Minimization Notice (No dark patterns) */}
+            <div className="rounded-xl bg-slate-50 border border-slate-200/80 p-3 text-[11px] text-slate-500 leading-relaxed">
+              <span className="font-semibold text-slate-700">Data Minimization:</span> We only collect essential authentication data. Phone number is strictly optional for urgent alerts. By registering, you agree to our{" "}
+              <Link to="/terms" className="text-blue-600 hover:text-blue-700 font-semibold underline underline-offset-2">Terms</Link>{" "}
+              and{" "}
+              <Link to="/privacy" className="text-blue-600 hover:text-blue-700 font-semibold underline underline-offset-2">Privacy Policy</Link>.
+            </div>
+
             <button
               type="submit"
               disabled={isOtpSending}
-              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-[0.99] text-white font-semibold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-600/25 disabled:opacity-50 mt-6"
+              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-[0.99] text-white font-semibold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-600/25 disabled:opacity-50 mt-4"
             >
               {isOtpSending ? (
                 <span>Sending Verification OTP...</span>
@@ -309,13 +317,29 @@ export default function Register() {
                 Sign In
               </Link>
             </p>
+
+            <div className="flex items-center justify-center gap-3 text-[11px] text-slate-400 mt-4">
+              <Link to="/privacy" className="hover:text-slate-600 transition">Privacy Policy</Link>
+              <span>·</span>
+              <Link to="/terms" className="hover:text-slate-600 transition">Terms of Service</Link>
+              <span>·</span>
+              <Link to="/cookies" className="hover:text-slate-600 transition">Cookie Policy</Link>
+            </div>
           </div>
         </div>
       </div>
 
       {/* OTP Verification Window Modal (Light Theme) */}
       {showOtpModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="otp-verification-title"
+          className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4"
+          onKeyDown={(e) => {
+            if (e.key === "Escape") setShowOtpModal(false);
+          }}
+        >
           <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 w-full max-w-md shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
             <button
               onClick={() => setShowOtpModal(false)}
@@ -329,7 +353,7 @@ export default function Register() {
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white p-1.5 mb-3 shadow-md border border-slate-200">
                 <img src="/logo.jpeg" alt="TrustLens Logo" className="w-full h-full object-contain rounded-xl" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900">Email OTP Verification</h3>
+              <h3 id="otp-verification-title" className="text-xl font-bold text-slate-900">Email OTP Verification</h3>
               <p className="text-xs text-slate-500 mt-1">
                 Enter the 6-digit verification code sent to <br />
                 <span className="text-blue-600 font-semibold">{formData.email}</span>

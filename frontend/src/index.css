@@ -120,12 +120,27 @@ select:focus-visible {
 
 .app-main [class*="text-gray-400"],
 .app-main [class*="text-gray-500"],
-.app-main [class*="text-gray-600"] {
-  color: #64748b !important;
+.app-main [class*="text-gray-600"],
+.app-main [class*="text-slate-400"] {
+  color: #475569 !important;
 }
 
 .app-main [class~="text-white"] {
   color: #162744 !important;
+}
+
+/* WCAG AA High Contrast Guarantee for primary action buttons & badges */
+.app-main button[class*="text-white"],
+.app-main a[class*="text-white"],
+.app-main [class*="bg-blue"] [class*="text-white"],
+.app-main [class*="bg-emerald"] [class*="text-white"],
+.app-main [class*="bg-indigo"] [class*="text-white"],
+.app-main [class*="bg-rose"] [class*="text-white"],
+.app-main [class*="bg-red"] [class*="text-white"],
+.app-main button[class*="bg-blue"],
+.app-main button[class*="bg-emerald"],
+.app-main button[class*="bg-indigo"] {
+  color: #ffffff !important;
 }
 
 .app-main [class*="text-3xl"] {

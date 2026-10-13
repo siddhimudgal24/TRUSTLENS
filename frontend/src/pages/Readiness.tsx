@@ -136,9 +136,15 @@ function Readiness() {
         </div>
       )}
 
-      <p className="text-[10px] text-slate-500">
-        Portfolio average readiness: <strong>{averageReadiness}/100</strong>
-      </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2">
+        <p className="text-xs text-slate-500">
+          Portfolio average readiness: <strong className="text-slate-800">{averageReadiness}/100</strong>
+        </p>
+
+        <p className="text-[11px] text-slate-500">
+          <span className="font-semibold text-slate-700">Decision-Support Notice:</span> Readiness metrics are analytical estimates based on modeled weights. On-site verification is required before field activation.
+        </p>
+      </div>
     </div>
   );
 }

@@ -8,10 +8,16 @@ import {
 import MainLayout from "./components/layout/MainLayout";
 import AppErrorBoundary from "./components/layout/AppErrorBoundary";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import TitleManager from "./components/common/TitleManager";
+import CookieConsent from "./components/common/CookieConsent";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
+import CookiePolicy from "./pages/CookiePolicy";
+import NotFound from "./pages/NotFound";
 
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const LiveMap = lazy(() => import("./pages/LiveMap"));
@@ -24,13 +30,24 @@ const Disasters = lazy(() => import("./pages/Disasters"));
 const Readiness = lazy(() => import("./pages/Readiness"));
 const EmergencyAlerts = lazy(() => import("./pages/EmergencyAlerts"));
 const Profile = lazy(() => import("./pages/Profile"));
-const NotFound = lazy(() => import("./pages/NotFound"));
 
 function App() {
   return (
     <AppErrorBoundary>
       <BrowserRouter>
+        {/* Dynamic unique document title manager */}
+        <TitleManager />
+
+        {/* Global Transparent Cookie Consent Banner (No dark patterns) */}
+        <CookieConsent />
+
         <Routes>
+          {/* Public Legal Compliance & Policy Pages */}
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<TermsOfService />} />
+          <Route path="/cookies" element={<CookiePolicy />} />
+          <Route path="/404" element={<NotFound />} />
+
           {/* Public Authentication Pages */}
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
@@ -67,6 +84,9 @@ function App() {
                       <Route path="/analytics" element={<Analytics />} />
                       <Route path="/profile" element={<Profile />} />
                       <Route path="/change-password" element={<Profile />} />
+                      <Route path="/privacy" element={<PrivacyPolicy />} />
+                      <Route path="/terms" element={<TermsOfService />} />
+                      <Route path="/cookies" element={<CookiePolicy />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </Suspense>

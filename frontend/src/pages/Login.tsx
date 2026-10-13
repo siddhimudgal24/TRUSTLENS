@@ -147,6 +147,14 @@ export default function Login() {
                 Create Account
               </Link>
             </p>
+
+            <div className="flex items-center justify-center gap-3 text-[11px] text-slate-400 mt-4">
+              <Link to="/privacy" className="hover:text-slate-600 transition">Privacy Policy</Link>
+              <span>·</span>
+              <Link to="/terms" className="hover:text-slate-600 transition">Terms of Service</Link>
+              <span>·</span>
+              <Link to="/cookies" className="hover:text-slate-600 transition">Cookie Policy</Link>
+            </div>
           </div>
         </div>
       </div>

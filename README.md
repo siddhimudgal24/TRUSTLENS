@@ -5,8 +5,10 @@ TRUSTLENS is a shelter-readiness and emergency-response planning application. It
 
 > **Project status:** Authentication endpoints are implemented in the Java backend. Shelter maps, readiness visualizations, allocation, scenarios, inspection results, and analytics in the frontend still use local demonstration data. The repository includes both a Java Servlet/JSP WAR application and a standalone `HttpServer` API runner; these are distinct runtime paths and are not wired together as one servlet container entry point.
 >
-# PROJECT REPORT 
+# PROJECT REPORT AND RESEARCH PAPER
 -[Project Report](https://docs.google.com/document/d/1Lfv2Dtcx1cHWTfCjpREAX407f7g45Rm6/edit)
+-[RESEARCH PAPER](https://1drv.ms/w/c/1c95e8e0b8ab70df/IQD5bWe1GmsWQYBRvDOfmmxKAS0hSouPpgqU_popXU4oRi0?e=qgb4DZ)
+-[PRESENTATION](https://drive.google.com/file/d/1MOPeGjya5y3t7nSbq-unnEEW_Z_TFwCK/view?usp=sharing)
 
 ## Contents
 
